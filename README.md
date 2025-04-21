@@ -1,5 +1,6 @@
 # ps5shopappkg
-ps5shopappkg.pages.dev
+-- ps5shopappkg.pages.dev --
+
 !! Este sitio redirecciona a ps5shopappkg.infy.uk  
 ( tienda Apps pkgs ps5 navegador , sin https )
 
