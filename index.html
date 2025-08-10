@@ -5,7 +5,48 @@
   <title>🟡​   🇸‌🇭‌🇴‌🇵‌ 🇦‌🇵‌🇵‌🇰‌🇬‌ 📦 🟡 🇼‌-🇧‌🇪‌🇹‌🇦‌ 🔹🇭‌🇴‌🇲‌🇪‌🇧‌🇷‌🇪‌🇼</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-   
+.astro-bubble {
+  position: fixed;
+  bottom: 100px; 
+  right: 250px;  
+  max-width: 240px;
+  background: #fff;
+  color: #000;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.3);
+  animation: bubbleIn 0.6s ease-out forwards;
+  z-index: 10000;
+}
+
+/* Triángulo a la derecha */
+.astro-bubble::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: -8px;
+  transform: translateY(-50%);
+  border-width: 8px 0 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent transparent #fff;
+}
+
+.astro-bubble a {
+  color: #0070ba;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 13px;
+}
+.astro-bubble a:hover {
+  text-decoration: underline;
+}
+
+
+
+
+
 .astro-bottom {
   transform: translateY(40px);
   opacity: 0;
@@ -105,9 +146,28 @@
 <div class="astro-bottom">
   <img src="https://raw.githubusercontent.com/ps5xploit/ps5shopappkg/refs/heads/main/astros-playroom.gif" alt="Astro saludando">
 </div>
+<div class="astro-bubble">
+  ★ Apoya el proyecto para seguir mejorando. ¡Cada pequeña ayuda cuenta! ¡Gracias! ☺ 
+  <a href="https://www.paypal.me/mour0ne" target="_blank">https://www.paypal.me/mour0ne</a>
+</div>
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
