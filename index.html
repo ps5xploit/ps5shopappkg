@@ -19,6 +19,7 @@
   box-shadow: 0 0 8px rgba(0,0,0,0.3);
   animation: bubbleIn 0.6s ease-out forwards;
   z-index: 10000;
+  line-height: 1.25;
 }
 
 /* Triángulo a la derecha */
@@ -43,10 +44,13 @@
   text-decoration: underline;
 }
 
+/* Animación de entrada del bocadillo */
+@keyframes bubbleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
 
-
-
-
+/* Astro asomando desde abajo */
 .astro-bottom {
   transform: translateY(40px);
   opacity: 0;
@@ -60,7 +64,6 @@
     opacity: 1;
   }
 }
-
 
 @media (prefers-reduced-motion: reduce) {
   .astro-bottom {
@@ -88,90 +91,109 @@
   bottom: 18px;
 }
 
+/* Página */
+body {
+  background-color: #000;
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* pegado arriba */
+  min-height: 100vh; /* siempre al menos la altura de la pantalla */
+  margin: 0;
+  padding-top: 60px; /* sube/baja todo el bloque */
+  overflow: hidden; /* evita barra de scroll innecesaria */
+}
 
-    body {
-      background-color: #000;
-      color: #fff;
-      font-family: 'Rajdhani', sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1.5em;
-    }
-     img {
-      height: 300px; /* Imagen más grande */
-      margin-right: 20px;
-    }
-    h1 {
-      font-size: 2em;
-      margin: 0;
-    }
-    .button {
-      background-color: #FFD700;
-      color: #000;
-      padding: 15px 30px;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 18px;
-      border: none;
-      border-radius: 10px;
-      box-shadow: 0 0 15px #FFD700;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
-    }
-    .button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 25px #FFD700;
-    }
-    p {
-      margin-top: 2em;
-      font-size: 14px;
-      opacity: 0.6;
-    }
+.header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5em;
+}
+img {
+  height: 300px; /* Imagen más grande */
+  margin-right: 20px;
+}
+h1 {
+  font-size: 2em;
+  margin: 0;
+}
+.button {
+  background-color: #FFD700;
+  color: #000;
+  padding: 15px 30px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 0 15px #FFD700;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+.button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 25px #FFD700;
+}
+p {
+  margin-top: 2em;
+  font-size: 14px;
+  opacity: 0.6;
+}
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
   
-    <img src="https://raw.githubusercontent.com/ps5xploit/ps5shopappkg/refs/heads/main/logo-themesps4.png" alt="PS5 SHOP APPKG Logo"> </br>
-<div class="header">
-  </div>
+  <img src="https://raw.githubusercontent.com/ps5xploit/ps5shopappkg/refs/heads/main/logo-themesps4.png" alt="PS5 SHOP APPKG Logo"> </br>
+  <div class="header"></div>
   <a class="button" href="https://ps5shopappkg.infy.uk">ENTER NOW</a>
-<div class="astro-bottom">
-  <img src="https://raw.githubusercontent.com/ps5xploit/ps5shopappkg/refs/heads/main/astros-playroom.gif" alt="Astro saludando">
-</div>
-<div class="astro-bubble">
-  ★ Apoya el proyecto para seguir mejorando. ¡Cada pequeña ayuda cuenta! ¡Gracias! ❤ 
-  <a href="https://www.paypal.me/mour0ne" target="_blank">https://www.paypal.me/mour0ne</a>
-</div>
+
+  <div class="astro-bottom">
+    <img src="https://raw.githubusercontent.com/ps5xploit/ps5shopappkg/refs/heads/main/astros-playroom.gif" alt="Astro saludando">
+  </div>
+
+  <!-- Bocadillo con texto multilenguaje -->
+  <div class="astro-bubble">
+    <span id="astro-msg"></span><br>
+    <a href="https://www.paypal.me/mour0ne" target="_blank">https://www.paypal.me/mour0ne</a>
+  </div>
+
+  <script>
+  (function () {
+    const msgs = {
+      es: "★ Apoya el proyecto para seguir mejorando. ¡Cada pequeña ayuda cuenta! ¡Gracias!",
+      en: "★ Support the project so we can keep improving. Every little bit helps! Thank you!",
+      fr: "★ Soutiens le projet pour que nous puissions continuer à l’améliorer. Chaque aide compte ! Merci !",
+      de: "★ Unterstütze das Projekt, damit wir es weiter verbessern können. Jeder Beitrag hilft! Danke!",
+      it: "★ Sostieni il progetto per continuare a migliorarlo. Ogni aiuto conta! Grazie!",
+      pt: "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
+      "pt-br": "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
+      ru: "★ Поддержите проект, чтобы мы продолжали развиваться. Любая помощь важна! Спасибо!",
+      ar: "★ ادعم المشروع كي نستمر في التحسين. كل مساعدة تهم! شكرًا لك!"
+    };
+
+    const langRaw = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+    const base = langRaw.split('-')[0];
+    const key = msgs[langRaw] ? langRaw : (msgs[base] ? base : "en");
+
+    const el = document.getElementById("astro-msg");
+    if (!el) return;
+
+    // Texto
+    el.textContent = msgs[key];
+
+    // RTL solo para árabe
+    if (key === "ar") {
+      const bubble = el.closest(".astro-bubble");
+      bubble.setAttribute("dir", "rtl");
+      bubble.style.textAlign = "right";
+    }
+  })();
+  </script>
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
