@@ -7,6 +7,29 @@
   <style>
    
 .astro-bottom {
+  transform: translateY(40px);
+  opacity: 0;
+  animation: astroIn 0.8s ease-out 0.2s forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes astroIn {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .astro-bottom {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.astro-bottom {
   position: fixed;
   bottom: 0;
   right: 50px;
@@ -85,6 +108,7 @@
 
 </body>
 </html>
+
 
 
 
