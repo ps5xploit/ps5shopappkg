@@ -215,9 +215,24 @@ p {
   })();
   </script>
 <a class="website-by" href="https://x.com/m0ur0ne" target="_blank">Website by mour0ne</a>
+<script>
+try {
+  if (window.applicationCache) {
+    window.applicationCache.addEventListener('updateready', function () {
+      if (window.applicationCache.status === window.applicationCache.UPDATEREADY) {
+        // Hay una versión nueva del manifest/recursos
+        // location.reload(); //
+      }
+    }, false);
+    
+    window.applicationCache.update();
+  }
+} catch(e) {}
+</script>
 
 </body>
 </html>
+
 
 
 
