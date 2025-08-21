@@ -214,132 +214,7 @@ p {
   })();
   </script>
 <a class="website-by" href="https://x.com/m0ur0ne" target="_blank">Website by mour0ne</a>
-<!-- AppCache minimal -->
-<style>
-  #appcache-debug {
-    position: fixed; left: 10px; bottom: 10px; z-index: 99999;
-    font: 13px/1.35 system-ui, sans-serif;
-    background: rgba(0,0,0,.85);
-    color: #0f0;
-    padding: 8px 10px;
-    border-radius: 8px;
-    max-width: 88vw;
-    white-space: pre-wrap;
-  }
-  #appcache-debug .err { color: #f66; }
-</style>
-<div id="appcache-debug">AppCache: init…</div>
-<script>
-(function(){
-  var box = document.getElementById("appcache-debug");
-  function log(msg, cls){
-    if (!box) return;
-    box.innerHTML += "\n" + (cls ? '<span class="'+cls+'">'+msg+'</span>' : msg);
-  }
-  function clear(){ if(box) box.innerHTML = ""; }
 
-  var ac = window.applicationCache;
-  if (!ac){ clear(); log("NO soportado","err"); return; }
-
-  function st(){ return (['UNCACHED','IDLE','CHECKING','DOWNLOADING','UPDATEREADY','OBSOLETE'][ac.status] || ('STATUS '+ac.status)); }
-
-  // Eventos AppCache
-  try { ac.update(); } catch(e) {}
-  ac.addEventListener('checking',   function(){ log("Checking… ("+st()+")"); }, false);
-  ac.addEventListener('downloading',function(){ log("Downloading… ("+st()+")"); }, false);
-  ac.addEventListener('progress',   function(e){
-    var t=(e&&e.total)?e.total:"?"; var l=(e&&e.loaded)?e.loaded:"?";
-    log("Progress "+l+" / "+t+" ("+st()+")");
-  }, false);
-  ac.addEventListener('cached',     function(){ log("Cached ✓"); }, false);
-  ac.addEventListener('noupdate',   function(){ log("NoUpdate ✓"); }, false);
-  ac.addEventListener('obsolete',   function(){ log("Obsolete ✗","err"); }, false);
-  ac.addEventListener('error',      function(){ log("Error ✗ (online? "+navigator.onLine+")","err"); }, false);
-  ac.addEventListener('updateready',function(){
-    log("UpdateReady → swap + reload");
-    try{ ac.swapCache(); }catch(e){}
-    try{ location.reload(); }catch(e){}
-  }, false);
-
-  // -------- Verificador de manifest + archivos --------
-  function xhrHEADorRange(url, cb){
-    var x = new XMLHttpRequest();
-    // bust cache
-    var bust = (url.indexOf('?') === -1 ? '?' : '&') + "_=" + Date.now();
-    x.open('HEAD', url + bust, true);
-    x.onreadystatechange = function(){
-      if (x.readyState===4){
-        if (x.status>=200 && x.status<400){ cb(null,url,x.status); }
-        else {
-          // fallback: GET con Range 0-0
-          var y = new XMLHttpRequest();
-          y.open('GET', url + bust, true);
-          y.setRequestHeader('Range','bytes=0-0');
-          y.onreadystatechange = function(){
-            if (y.readyState===4){
-              if (y.status===206 || (y.status>=200 && y.status<300)) cb(null,url,y.status);
-              else cb(new Error("HTTP "+y.status),url,y.status);
-            }
-          };
-          y.send();
-        }
-      }
-    };
-    x.send();
-  }
-
-  function parseManifest(text){
-    var lines = text.split(/\r?\n/);
-    var files=[], mode="IMPLICIT";
-    for (var i=0;i<lines.length;i++){
-      var L = lines[i].replace(/\uFEFF/g,'').trim();
-      if (!L || L[0]==='#') continue;
-      if (/^CACHE:$/i.test(L)) { mode="CACHE"; continue; }
-      if (/^(NETWORK|FALLBACK):/i.test(L)) { mode="OTHER"; continue; }
-      if (mode==="IMPLICIT" || mode==="CACHE") files.push(L);
-    }
-    return files;
-  }
-
-  function checkManifest(){
-    var murl = document.documentElement.getAttribute('manifest') || 'cache.appcache';
-    log("Leyendo manifest: "+murl);
-    var req = new XMLHttpRequest();
-    req.open('GET', murl+"?_="+Date.now(), true);
-    req.onreadystatechange = function(){
-      if (req.readyState===4){
-        if (req.status!==200){ log("Manifest no accesible ("+req.status+")","err"); return; }
-        var files = parseManifest(req.responseText);
-        if (!files.length){ log("Manifest sin entradas en CACHE:","err"); return; }
-        log("Verificando "+files.length+" archivos…");
-
-        var bad=[], i=0;
-        (function next(){
-          if (i>=files.length){
-            if (bad.length){
-              log("FALLAN ("+bad.length+") archivos:","err");
-              bad.forEach(function(b){ log(" - "+b.file+"  ["+b.code+"]","err"); });
-            } else {
-              log("Todos los archivos responden correctamente ✓");
-            }
-            return;
-          }
-          var f = files[i++];
-          xhrHEADorRange(f,function(err,url,code){
-            if (err) bad.push({file:f, code:code});
-            next();
-          });
-        })();
-      }
-    };
-    req.send();
-  }
-
-  clear();
-  log("Estado inicial: "+st());
-  setTimeout(checkManifest,800);
-})();
-</script>
 
 
 
@@ -348,6 +223,7 @@ p {
 
 </body>
 </html>
+
 
 
 
