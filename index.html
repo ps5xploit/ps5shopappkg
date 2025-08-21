@@ -218,11 +218,14 @@ p {
 <style>
   #appcache-debug {
     position: fixed; left: 10px; bottom: 10px; z-index: 99999;
-    font: 13px/1.35 system-ui, sans-serif; background: rgba(0,0,0,.85);
-    color: #0f0; padding: 8px 10px; border-radius: 8px;
-    max-width: 88vw; white-space: pre-wrap;
+    font: 13px/1.35 system-ui, sans-serif;
+    background: rgba(0,0,0,.85);
+    color: #0f0;
+    padding: 8px 10px;
+    border-radius: 8px;
+    max-width: 88vw;
+    white-space: pre-wrap;
   }
-  #appcache-debug b { color: #9cf; }
   #appcache-debug .err { color: #f66; }
 </style>
 <div id="appcache-debug">AppCache: init…</div>
@@ -231,8 +234,7 @@ p {
   var box = document.getElementById("appcache-debug");
   function log(msg, cls){
     if (!box) return;
-    var s = box.innerHTML;
-    box.innerHTML = s + (s ? "\n" : "") + (cls ? '<span class="'+cls+'">'+msg+'</span>' : msg);
+    box.innerHTML += "\n" + (cls ? '<span class="'+cls+'">'+msg+'</span>' : msg);
   }
   function clear(){ if(box) box.innerHTML = ""; }
 
@@ -259,69 +261,83 @@ p {
     try{ location.reload(); }catch(e){}
   }, false);
 
-  // -------- Verificador de manifest + archivos (con sección implícita) --------
-  function xhr(method, url, cb, headers){
+  // -------- Verificador de manifest + archivos --------
+  function xhrHEADorRange(url, cb){
     var x = new XMLHttpRequest();
-    // bust cache para verificar realmente
-    var sep = url.indexOf('?') === -1 ? '?' : '&';
-    x.open(method, url + sep + '_=' + Date.now(), true);
-    if (headers) for (var k in headers) x.setRequestHeader(k, headers[k]);
-    x.onreadystatechange = function(){ if (x.readyState===4) cb(x.status, x.responseText, x.getAllResponseHeaders()); };
+    // bust cache
+    var bust = (url.indexOf('?') === -1 ? '?' : '&') + "_=" + Date.now();
+    x.open('HEAD', url + bust, true);
+    x.onreadystatechange = function(){
+      if (x.readyState===4){
+        if (x.status>=200 && x.status<400){ cb(null,url,x.status); }
+        else {
+          // fallback: GET con Range 0-0
+          var y = new XMLHttpRequest();
+          y.open('GET', url + bust, true);
+          y.setRequestHeader('Range','bytes=0-0');
+          y.onreadystatechange = function(){
+            if (y.readyState===4){
+              if (y.status===206 || (y.status>=200 && y.status<300)) cb(null,url,y.status);
+              else cb(new Error("HTTP "+y.status),url,y.status);
+            }
+          };
+          y.send();
+        }
+      }
+    };
     x.send();
   }
-  function parseCACHE(text){
-    // Soporta: sección implícita (líneas iniciales) y explícita "CACHE:"
-    var lines = text.split(/\r?\n/), files=[], mode='IMPLICIT';
+
+  function parseManifest(text){
+    var lines = text.split(/\r?\n/);
+    var files=[], mode="IMPLICIT";
     for (var i=0;i<lines.length;i++){
-      var L = lines[i].replace(/\uFEFF/g,'').trim(); // limpia BOM ocultos
+      var L = lines[i].replace(/\uFEFF/g,'').trim();
       if (!L || L[0]==='#') continue;
-      if (/^CACHE:$/i.test(L)) { mode='CACHE'; continue; }
-      if (/^(NETWORK|FALLBACK):/i.test(L)) { mode='OTHER'; continue; }
-      if (mode==='IMPLICIT' || mode==='CACHE') files.push(L);
+      if (/^CACHE:$/i.test(L)) { mode="CACHE"; continue; }
+      if (/^(NETWORK|FALLBACK):/i.test(L)) { mode="OTHER"; continue; }
+      if (mode==="IMPLICIT" || mode==="CACHE") files.push(L);
     }
     return files;
   }
-  function checkManifestAndFiles(){
+
+  function checkManifest(){
     var murl = document.documentElement.getAttribute('manifest') || 'cache.appcache';
     log("Leyendo manifest: "+murl);
-    xhr('GET', murl, function(code, text, hdrs){
-      if (code!==200){ log("Manifest no accesible ("+code+")","err"); return; }
-      var firstLine = (text.split(/\r?\n/)[0]||'').trim();
-      if (firstLine !== 'CACHE MANIFEST') log("ATENCIÓN: primera línea ≠ 'CACHE MANIFEST'","err");
-      var ct = (hdrs||'').match(/^content-type:\s*([^\r\n]+)/im);
-      if (!ct || !/text\/cache-manifest/i.test((ct[1]||'').trim())) log("ATENCIÓN: Content-Type = "+(ct?ct[1]:'(desconocido)')+" (debería ser text/cache-manifest)","err");
+    var req = new XMLHttpRequest();
+    req.open('GET', murl+"?_="+Date.now(), true);
+    req.onreadystatechange = function(){
+      if (req.readyState===4){
+        if (req.status!==200){ log("Manifest no accesible ("+req.status+")","err"); return; }
+        var files = parseManifest(req.responseText);
+        if (!files.length){ log("Manifest sin entradas en CACHE:","err"); return; }
+        log("Verificando "+files.length+" archivos…");
 
-      var files = parseCACHE(text);
-      if (!files.length){ log("Manifest sin entradas (implícitas/expresas)","err"); return; }
-
-      log("Verificando "+files.length+" archivo(s)…");
-      var i=0, bad=[];
-      (function next(){
-        if (i>=files.length){
-          if (bad.length){
-            log("FALLAN ("+bad.length+"):");
-            for (var j=0;j<Math.min(15,bad.length);j++) log(" - "+bad[j].file+"  ["+bad[j].code+"]","err");
-          } else {
-            log("OK: todos los archivos del CACHE: responden 2xx/206 ✓");
+        var bad=[], i=0;
+        (function next(){
+          if (i>=files.length){
+            if (bad.length){
+              log("FALLAN ("+bad.length+") archivos:","err");
+              bad.forEach(function(b){ log(" - "+b.file+"  ["+b.code+"]","err"); });
+            } else {
+              log("Todos los archivos responden correctamente ✓");
+            }
+            return;
           }
-          return;
-        }
-        var f = files[i++];
-
-        // HEAD → si falla, GET con Range 0-0 (por si HEAD está bloqueado)
-        xhr('HEAD', f, function(codeH){
-          if (codeH>=200 && codeH<400) return next();
-          xhr('GET', f, function(codeG){
-            if (codeG===206 || (codeG>=200 && codeG<300)) next();
-            else { bad.push({file:f, code:codeG}); next(); }
-          }, {'Range':'bytes=0-0'});
-        });
-      })();
-    });
+          var f = files[i++];
+          xhrHEADorRange(f,function(err,url,code){
+            if (err) bad.push({file:f, code:code});
+            next();
+          });
+        })();
+      }
+    };
+    req.send();
   }
 
+  clear();
   log("Estado inicial: "+st());
-  setTimeout(checkManifestAndFiles, 600);
+  setTimeout(checkManifest,800);
 })();
 </script>
 
@@ -332,6 +348,7 @@ p {
 
 </body>
 </html>
+
 
 
 
