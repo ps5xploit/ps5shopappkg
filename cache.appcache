@@ -1,5 +1,5 @@
-CACHE MANIFEST
-# Generated on 21/08/2025 at 11:45:56 #
+CACHE MANIFEST 
+# Generated on 21/08/2025 at 11:52:11
 89ArcadeCover.png 
 astros-playroom.gif 
 AstrosPlayroom.png 
@@ -8,14 +8,16 @@ background.gif
 background.mp4 
 beatsofrage-5disc.png 
 BOR-17GAMES.png 
+cache.appcache 
 congrats-astro.webp 
 data-extractor.png 
 daysgone.png 
-DBFighterZUltimate%20Edition.png 
+DBFighterZUltimate Edition.png 
 din0crisis.png 
 driveclub.png 
 emoji_ps.png 
 GBA-EMU-PS4.png 
+generate_appcache.bat 
 gow.png 
 GTAV.png 
 HorizonForbiddenWest.png 
@@ -39,7 +41,7 @@ icon0-webbrowser.png
 icon0-x.png 
 icon0-youtube.png 
 index.html 
-logo-themesps4.png
+logo-themesps4.png 
 magic-castle.png 
 mantenimiento1.png 
 mantenimiento2.png 
@@ -54,19 +56,18 @@ pacman.png
 POKEMON-EDITION-PS4.png 
 PT-SilentHills.png 
 R2-L2BUTTONSs.png 
-ratchet-and-clank.png
+ratchet-and-clank.png 
+README.md 
 SEGA700-cover.png 
 share-factory.png 
 snake.png 
 snes-102games-cover.png 
 soulreaver.png 
 thelastofus.png 
-TombRaider%20I-II-III.png 
+TombRaider I-II-III.png 
 TombRaiderRemastered.png 
 XmenvsStreetFighter-BEATSOFRAGE.png 
 zelda-cover.png 
  
-NETWORK:
+NETWORK: 
 * 
-
-
