@@ -220,11 +220,7 @@ p {
 (function () {
   var ac = window.applicationCache;
   if (!ac) return;
-
-  // Forzar comprobación al cargar
   try { ac.update(); } catch(e) {}
-
-  // Cuando hay una versión nueva lista, se activa y se recarga
   ac.addEventListener('updateready', function(){
     try { ac.swapCache(); } catch(e) {}
     try { location.reload(); } catch(e) {}
@@ -233,8 +229,10 @@ p {
 </script>
 
 
+
 </body>
 </html>
+
 
 
 
