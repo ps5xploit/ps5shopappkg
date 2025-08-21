@@ -259,22 +259,25 @@ p {
     try{ location.reload(); }catch(e){}
   }, false);
 
-  // Verificador de manifest + archivos
+  // -------- Verificador de manifest + archivos (con sección implícita) --------
   function xhr(method, url, cb, headers){
     var x = new XMLHttpRequest();
-    x.open(method, url, true);
+    // bust cache para verificar realmente
+    var sep = url.indexOf('?') === -1 ? '?' : '&';
+    x.open(method, url + sep + '_=' + Date.now(), true);
     if (headers) for (var k in headers) x.setRequestHeader(k, headers[k]);
     x.onreadystatechange = function(){ if (x.readyState===4) cb(x.status, x.responseText, x.getAllResponseHeaders()); };
     x.send();
   }
   function parseCACHE(text){
-    var lines = text.split(/\r?\n/), files=[], inC=false;
+    // Soporta: sección implícita (líneas iniciales) y explícita "CACHE:"
+    var lines = text.split(/\r?\n/), files=[], mode='IMPLICIT';
     for (var i=0;i<lines.length;i++){
-      var L = lines[i].replace(/\uFEFF/g,'').trim(); // quita BOMs ocultos
+      var L = lines[i].replace(/\uFEFF/g,'').trim(); // limpia BOM ocultos
       if (!L || L[0]==='#') continue;
-      if (/^CACHE:$/i.test(L)) { inC=true; continue; }
-      if (/^(NETWORK|FALLBACK):/i.test(L)) { inC=false; continue; }
-      if (inC) files.push(L);
+      if (/^CACHE:$/i.test(L)) { mode='CACHE'; continue; }
+      if (/^(NETWORK|FALLBACK):/i.test(L)) { mode='OTHER'; continue; }
+      if (mode==='IMPLICIT' || mode==='CACHE') files.push(L);
     }
     return files;
   }
@@ -283,26 +286,28 @@ p {
     log("Leyendo manifest: "+murl);
     xhr('GET', murl, function(code, text, hdrs){
       if (code!==200){ log("Manifest no accesible ("+code+")","err"); return; }
+      var firstLine = (text.split(/\r?\n/)[0]||'').trim();
+      if (firstLine !== 'CACHE MANIFEST') log("ATENCIÓN: primera línea ≠ 'CACHE MANIFEST'","err");
       var ct = (hdrs||'').match(/^content-type:\s*([^\r\n]+)/im);
-      if (!ct || !/text\/cache-manifest/i.test(ct[1]||'')) log("ATENCIÓN: Content-Type = "+(ct?ct[1]:'(desconocido)')+" (debería ser text/cache-manifest)","err");
-      if (/^CACHE MANIFEST\s*$/.test(text.split(/\r?\n/)[0])===false) log("ATENCIÓN: primera línea no es EXACTAMENTE 'CACHE MANIFEST'","err");
+      if (!ct || !/text\/cache-manifest/i.test((ct[1]||'').trim())) log("ATENCIÓN: Content-Type = "+(ct?ct[1]:'(desconocido)')+" (debería ser text/cache-manifest)","err");
 
       var files = parseCACHE(text);
-      if (!files.length){ log("Manifest sin entradas en CACHE:","err"); return; }
-      log("Verificando "+files.length+" archivo(s)…");
+      if (!files.length){ log("Manifest sin entradas (implícitas/expresas)","err"); return; }
 
+      log("Verificando "+files.length+" archivo(s)…");
       var i=0, bad=[];
       (function next(){
         if (i>=files.length){
           if (bad.length){
             log("FALLAN ("+bad.length+"):");
-            for (var j=0;j<Math.min(10,bad.length);j++) log(" - "+bad[j].file+"  ["+bad[j].code+"]","err");
+            for (var j=0;j<Math.min(15,bad.length);j++) log(" - "+bad[j].file+"  ["+bad[j].code+"]","err");
           } else {
             log("OK: todos los archivos del CACHE: responden 2xx/206 ✓");
           }
           return;
         }
         var f = files[i++];
+
         // HEAD → si falla, GET con Range 0-0 (por si HEAD está bloqueado)
         xhr('HEAD', f, function(codeH){
           if (codeH>=200 && codeH<400) return next();
@@ -324,8 +329,10 @@ p {
 
 
 
+
 </body>
 </html>
+
 
 
 
