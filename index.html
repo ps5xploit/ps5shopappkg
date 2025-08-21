@@ -215,175 +215,118 @@ p {
   </script>
 <a class="website-by" href="https://x.com/m0ur0ne" target="_blank">Website by mour0ne</a>
 <!-- AppCache minimal -->
-<script>
-(function () {
-  var ac = window.applicationCache;
-  if (!ac) return;
-  try { ac.update(); } catch(e) {}
-  ac.addEventListener('updateready', function(){
-    try { ac.swapCache(); } catch(e) {}
-    try { location.reload(); } catch(e) {}
-  }, false);
-})();
-</script>
-<!-- AppCache Debug (solo para pruebas, quitar después) -->
-<style>
-  #appcache-debug {
-    position: fixed;
-    left: 10px;
-    bottom: 10px;
-    z-index: 99999;
-    font: 13px/1.3 system-ui, sans-serif;
-    background: rgba(0,0,0,0.8);
-    color: #0f0;
-    padding: 6px 10px;
-    border-radius: 6px;
-    max-width: 85vw;
-    white-space: pre-line;
-  }
-</style>
-<!-- AppCache Debug + Verificador de archivos del manifest -->
 <style>
   #appcache-debug {
     position: fixed; left: 10px; bottom: 10px; z-index: 99999;
-    font: 13px/1.3 system-ui, sans-serif; background: rgba(0,0,0,.85);
-    color: #0f0; padding: 6px 10px; border-radius: 6px; max-width: 86vw; white-space: pre-line;
+    font: 13px/1.35 system-ui, sans-serif; background: rgba(0,0,0,.85);
+    color: #0f0; padding: 8px 10px; border-radius: 8px;
+    max-width: 88vw; white-space: pre-wrap;
   }
+  #appcache-debug b { color: #9cf; }
+  #appcache-debug .err { color: #f66; }
 </style>
 <div id="appcache-debug">AppCache: init…</div>
 <script>
 (function(){
   var box = document.getElementById("appcache-debug");
-  function log(msg){ if (box) box.textContent = "AppCache: " + msg; }
+  function log(msg, cls){
+    if (!box) return;
+    var s = box.innerHTML;
+    box.innerHTML = s + (s ? "\n" : "") + (cls ? '<span class="'+cls+'">'+msg+'</span>' : msg);
+  }
+  function clear(){ if(box) box.innerHTML = ""; }
 
   var ac = window.applicationCache;
-  if (!ac){ log("NO soportado"); return; }
+  if (!ac){ clear(); log("NO soportado","err"); return; }
 
-  function statusText(){
-    var map = ['UNCACHED','IDLE','CHECKING','DOWNLOADING','UPDATEREADY','OBSOLETE'];
-    return map[ac.status] || ("STATUS " + ac.status);
-  }
+  function st(){ return (['UNCACHED','IDLE','CHECKING','DOWNLOADING','UPDATEREADY','OBSOLETE'][ac.status] || ('STATUS '+ac.status)); }
 
-  // ---- APP CACHE EVENT LOG ----
+  // Eventos AppCache
   try { ac.update(); } catch(e) {}
-  ac.addEventListener('checking',   function(){ log("Checking… ("+statusText()+")"); }, false);
-  ac.addEventListener('downloading',function(){ log("Downloading… ("+statusText()+")"); }, false);
+  ac.addEventListener('checking',   function(){ log("Checking… ("+st()+")"); }, false);
+  ac.addEventListener('downloading',function(){ log("Downloading… ("+st()+")"); }, false);
   ac.addEventListener('progress',   function(e){
-    var t = (e && e.total) ? e.total : "?"; var l = (e && e.loaded) ? e.loaded : "?";
-    log("Progress "+l+" / "+t+" ("+statusText()+")");
+    var t=(e&&e.total)?e.total:"?"; var l=(e&&e.loaded)?e.loaded:"?";
+    log("Progress "+l+" / "+t+" ("+st()+")");
   }, false);
   ac.addEventListener('cached',     function(){ log("Cached ✓"); }, false);
   ac.addEventListener('noupdate',   function(){ log("NoUpdate ✓"); }, false);
-  ac.addEventListener('obsolete',   function(){ log("Obsolete ✗"); }, false);
-  ac.addEventListener('error',      function(){ log("Error ✗ (online? "+navigator.onLine+")"); }, false);
+  ac.addEventListener('obsolete',   function(){ log("Obsolete ✗","err"); }, false);
+  ac.addEventListener('error',      function(){ log("Error ✗ (online? "+navigator.onLine+")","err"); }, false);
   ac.addEventListener('updateready',function(){
-    log("UpdateReady → recargando…");
-    try { ac.swapCache(); } catch(e) {}
-    try { location.reload(); } catch(e) {}
+    log("UpdateReady → swap + reload");
+    try{ ac.swapCache(); }catch(e){}
+    try{ location.reload(); }catch(e){}
   }, false);
 
-  // ---- MANIFEST FILE CHECKER ----
-  // Lee cache.appcache, lista la sección CACHE: y verifica cada recurso.
-  function fetchText(url, cb){
+  // Verificador de manifest + archivos
+  function xhr(method, url, cb, headers){
     var x = new XMLHttpRequest();
-    x.open('GET', url, true);
-    x.onreadystatechange = function(){
-      if (x.readyState === 4) cb(x.status, x.responseText, x.getAllResponseHeaders());
-    };
+    x.open(method, url, true);
+    if (headers) for (var k in headers) x.setRequestHeader(k, headers[k]);
+    x.onreadystatechange = function(){ if (x.readyState===4) cb(x.status, x.responseText, x.getAllResponseHeaders()); };
     x.send();
   }
-
-  function headOrRange(url, cb){
-    // 1º intenta HEAD
-    var x = new XMLHttpRequest();
-    try{
-      x.open('HEAD', url, true);
-      x.onreadystatechange = function(){
-        if (x.readyState === 4) {
-          if (x.status >= 200 && x.status < 400) cb(null, x.status);
-          else rangeProbe(); // fallback
-        }
-      };
-      x.send();
-    }catch(e){ rangeProbe(); }
-
-    function rangeProbe(){
-      var y = new XMLHttpRequest();
-      y.open('GET', url, true);
-      y.setRequestHeader('Range','bytes=0-0'); // solo 1 byte
-      y.onreadystatechange = function(){
-        if (y.readyState === 4) {
-          if (y.status === 206 || (y.status >= 200 && y.status < 300)) cb(null, y.status);
-          else cb(new Error("HTTP "+y.status), y.status);
-        }
-      };
-      y.send();
-    }
-  }
-
-  function parseCacheSection(text){
-    var lines = text.split(/\r?\n/);
-    var inCache = false, files = [];
+  function parseCACHE(text){
+    var lines = text.split(/\r?\n/), files=[], inC=false;
     for (var i=0;i<lines.length;i++){
-      var line = lines[i].trim();
-      if (!line || line.charAt(0) === '#') continue;
-      if (/^CACHE:$/i.test(line)) { inCache = true; continue; }
-      if (/^(NETWORK|FALLBACK):/i.test(line)) { inCache = false; continue; }
-      if (inCache) files.push(line);
+      var L = lines[i].replace(/\uFEFF/g,'').trim(); // quita BOMs ocultos
+      if (!L || L[0]==='#') continue;
+      if (/^CACHE:$/i.test(L)) { inC=true; continue; }
+      if (/^(NETWORK|FALLBACK):/i.test(L)) { inC=false; continue; }
+      if (inC) files.push(L);
     }
     return files;
   }
+  function checkManifestAndFiles(){
+    var murl = document.documentElement.getAttribute('manifest') || 'cache.appcache';
+    log("Leyendo manifest: "+murl);
+    xhr('GET', murl, function(code, text, hdrs){
+      if (code!==200){ log("Manifest no accesible ("+code+")","err"); return; }
+      var ct = (hdrs||'').match(/^content-type:\s*([^\r\n]+)/im);
+      if (!ct || !/text\/cache-manifest/i.test(ct[1]||'')) log("ATENCIÓN: Content-Type = "+(ct?ct[1]:'(desconocido)')+" (debería ser text/cache-manifest)","err");
+      if (/^CACHE MANIFEST\s*$/.test(text.split(/\r?\n/)[0])===false) log("ATENCIÓN: primera línea no es EXACTAMENTE 'CACHE MANIFEST'","err");
 
-  function checkManifestFiles(){
-    var manifestUrl = (document.documentElement.getAttribute('manifest') || 'cache.appcache');
-    fetchText(manifestUrl, function(status, text, headers){
-      if (status !== 200){
-        log("Manifest no accesible ("+status+").");
-        return;
-      }
-      // Aviso MIME
-      var mime = (headers || '').match(/^content-type:\s*([^\r\n]+)/im);
-      if (mime && !/text\/cache-manifest/i.test(mime[1])) {
-        log("ATENCIÓN: Content-Type = "+mime[1]+" (debería ser text/cache-manifest)");
-      }
-      var files = parseCacheSection(text);
-      if (!files.length){ log("Manifest sin entradas en CACHE:"); return; }
+      var files = parseCACHE(text);
+      if (!files.length){ log("Manifest sin entradas en CACHE:","err"); return; }
+      log("Verificando "+files.length+" archivo(s)…");
 
-      var idx = 0, bad = [];
-      function next(){
-        if (idx >= files.length){
+      var i=0, bad=[];
+      (function next(){
+        if (i>=files.length){
           if (bad.length){
-            log("FALLOS: "+bad.length+"\nEjemplo: "+bad[0].file+" ("+bad[0].err+")");
+            log("FALLAN ("+bad.length+"):");
+            for (var j=0;j<Math.min(10,bad.length);j++) log(" - "+bad[j].file+"  ["+bad[j].code+"]","err");
           } else {
-            log("Verificación OK ("+files.length+" ficheros).");
+            log("OK: todos los archivos del CACHE: responden 2xx/206 ✓");
           }
           return;
         }
-        var f = files[idx++];
-
-        // Normaliza rutas relativas al index
-        var url = f; // si son relativas, el navegador las resolverá
-        headOrRange(url, function(err, code){
-          if (err) bad.push({file: f, err: String(err.message || err)});
-          next();
+        var f = files[i++];
+        // HEAD → si falla, GET con Range 0-0 (por si HEAD está bloqueado)
+        xhr('HEAD', f, function(codeH){
+          if (codeH>=200 && codeH<400) return next();
+          xhr('GET', f, function(codeG){
+            if (codeG===206 || (codeG>=200 && codeG<300)) next();
+            else { bad.push({file:f, code:codeG}); next(); }
+          }, {'Range':'bytes=0-0'});
         });
-      }
-      log("Verificando "+files.length+" ficheros…");
-      next();
+      })();
     });
   }
 
-  // Lanza el verificador unos segundos después para no interferir
-  setTimeout(checkManifestFiles, 800);
-  log("Estado inicial: " + statusText());
+  log("Estado inicial: "+st());
+  setTimeout(checkManifestAndFiles, 600);
 })();
 </script>
+
 
 
 
 
 </body>
 </html>
+
 
 
 
