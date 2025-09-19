@@ -1,230 +1,130 @@
-<html lang="en" manifest="cache.appcache">
-<head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7277543096175575"
-     crossorigin="anonymous"></script> <meta name="google-adsense-account" content="ca-pub-7277543096175575">
-  <meta charset="UTF-8">
-  <title>🟡​   🇸‌🇭‌🇴‌🇵‌ 🇦‌🇵‌🇵‌🇰‌🇬‌ 📦 🟡 🇼‌-🇧‌🇪‌🇹‌🇦‌ 🔹🇭‌🇴‌🇲‌🇪‌🇧‌🇷‌🇪‌🇼</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🟡​   🇸‌🇭‌🇴‌🇵‌ 🇦‌🇵‌🇵‌🇰‌🇬‌ 📦 🟡 🇼‌-🇧‌🇪‌🇹‌🇦‌ 🔹🇭‌🇴‌🇲‌🇪‌🇧‌🇷‌🇪‌🇼‌</title>
+  <meta name="robots" content="noindex, nofollow" />
   <style>
-.website-by {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 14px;
-  color: #fff;
-  opacity: 0.7;
-  text-decoration: none;
-  transition: opacity 0.3s ease, transform 0.2s ease;
-  z-index: 10000;
-}
-.website-by:hover {
-  opacity: 1;
-  transform: scale(1.05);
+.inline-icon {
+  width: 28px !important;
+  height: 28px !important;
+  margin-right: 8px;
 }
 
 
-.astro-bubble {
-  position: fixed;
-  bottom: 100px; 
-  right: 250px;  
-  max-width: 240px;
-  background: #fff;
-  color: #000;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 13px;
-  padding: 6px 10px;
-  border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.3);
-  animation: bubbleIn 0.6s ease-out forwards;
-  z-index: 10000;
-  line-height: 1.25;
-}
 
-/* Triángulo a la derecha */
-.astro-bubble::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: -8px;
-  transform: translateY(-50%);
-  border-width: 8px 0 8px 8px;
-  border-style: solid;
-  border-color: transparent transparent transparent #fff;
-}
 
-.astro-bubble a {
-  color: #0070ba;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 13px;
-}
-.astro-bubble a:hover {
-  text-decoration: underline;
-}
-
-/* Animación de entrada del bocadillo */
-@keyframes bubbleIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-/* Astro asomando desde abajo */
-.astro-bottom {
-  transform: translateY(40px);
-  opacity: 0;
-  animation: astroIn 0.8s ease-out 0.2s forwards;
-  will-change: transform, opacity;
-}
-
-@keyframes astroIn {
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .astro-bottom {
-    animation: none;
-    transform: none;
-    opacity: 1;
-  }
-}
-
-.astro-bottom {
-  position: fixed;
-  bottom: 0;
-  right: 50px;
-  width: 230px;   /* = ancho del GIF */
-  height: 190px;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-.astro-bottom img {
-  width: 100%;    
-  height: auto;
-  position: relative;
-  bottom: 18px;
-}
-
-/* Página */
-body {
-  background-color: #000;
-  color: #fff;
-  font-family: 'Rajdhani', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* pegado arriba */
-  min-height: 100vh; /* siempre al menos la altura de la pantalla */
-  margin: 0;
-  padding-top: 60px; /* sube/baja todo el bloque */
-  overflow: hidden; /* evita barra de scroll innecesaria */
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1.5em;
-}
-img {
-  height: 300px; /* Imagen más grande */
-  margin-right: 20px;
-}
-h1 {
-  font-size: 2em;
-  margin: 0;
-}
-.button {
-  background-color: #FFD700;
-  color: #000;
-  padding: 15px 30px;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 18px;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 0 15px #FFD700;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-.button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px #FFD700;
-}
-p {
-  margin-top: 2em;
-  font-size: 14px;
-  opacity: 0.6;
-}
+    :root {
+      --bg:#000; --fg:#fff; --muted:#bdbdbd; --accent:#ffd34d; --ink:#111;
+    }
+    html, body {
+      height:100%; margin:0; background:var(--bg); color:var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial, "Noto Sans";
+    }
+    .wrap {
+      min-height:100%;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      padding:24px;
+    }
+    img.logo {
+      max-width:320px;
+      height:auto;
+      margin-bottom:30px;
+    }
+    #msg {
+      font-size: clamp(22px, 3.6vw, 32px);
+      line-height:1.5;
+    }
+    .sub {
+      margin-top:12px;
+      color:var(--muted);
+      font-size: clamp(15px, 2.2vw, 18px);
+    }
+    .btn {
+      display:inline-flex; align-items:center; gap:10px;
+      margin-top:28px; padding:12px 20px; border-radius:10px;
+      background:var(--accent); color:var(--ink); font-weight:700;
+      text-decoration:none; transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+      box-shadow:0 10px 28px rgba(255,211,77,.18);
+    }
+    .btn:hover { transform: translateY(-2px); filter:brightness(1.04); }
+    .btn:active { transform: translateY(0); filter:brightness(.98); }
+    svg { display:inline-block; vertical-align:middle; }
+    .inline-icon { width:1.1em; height:1.1em; }
+    .heart { color:#ff6060; }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap" rel="stylesheet">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7277543096175575"
-     crossorigin="anonymous"></script></head>
+</head>
 <body>
-  
-  <img src="logo-themesps4.png" alt="PS5 SHOP APPKG Logo"> </br>
-  <div class="header"></div>
-  <a class="button" href="https://ps5shopappkg.infy.uk">ENTER NOW</a>
+  <main class="wrap">
+    <section>
+      <img src="https://raw.githubusercontent.com/ps5xploit/ps5shopappkg/refs/heads/main/logo-themesps4.png" 
+     alt="Logo"
+     style="width:500px; height:auto; display:block; margin:0 auto 30px;" />
 
-  <div class="astro-bottom">
-    <img src="astros-playroom.gif" alt="Astro saludando">
-  </div>
-
-  <!-- Bocadillo con texto multilenguaje -->
-  <div class="astro-bubble">
-    <span id="astro-msg"></span><br>
-    <a href="https://www.paypal.me/mour0ne" target="_blank">https://www.paypal.me/mour0ne</a>
-  </div>
+      <div id="msg"></div>
+      <div class="sub" id="sub"></div>
+      <a class="btn" id="btn" href="https://paypal.me/mour0ne" target="_blank" rel="noopener">
+        <!-- taza café en SVG -->
+        <svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 7h12v5a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V7zm15 1h2a3 3 0 0 1 0 6h-2.2a6.9 6.9 0 0 0 .2-6zM7 4.5C7 3.7 7.6 3 8.5 3S10 3.7 10 4.5 9.4 6 8.5 6 7 5.3 7 4.5zm4 0c0-.8.6-1.5 1.5-1.5S14 3.7 14 4.5 13.4 6 12.5 6 11 5.3 11 4.5z" fill="currentColor"/>
+        </svg>
+        <span id="btnLabel"> Support</span>
+      </a>
+    </section>
+  </main>
 
   <script>
-  (function () {
-    const msgs = {
-      es: "★ Apoya el proyecto para seguir mejorando. ¡Cada pequeña ayuda cuenta! ¡Gracias!",
-  en: "★ Support the project so we can keep improving. Every little bit helps! Thank you!",
-  fr: "★ Soutiens le projet pour que nous puissions continuer à l’améliorer. Chaque aide compte ! Merci !",
-  de: "★ Unterstütze das Projekt, damit wir es weiter verbessern können. Jeder Beitrag hilft! Danke!",
-  it: "★ Sostieni il progetto per continuare a migliorarlo. Ogni aiuto conta! Grazie!",
-  pt: "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
-  "pt-br": "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
-  ru: "★ Поддержите проект, чтобы мы продолжали развиваться. Любая помощь важна! Спасибо!",
-  ar: "★ ادعم المشروع كي نستمر في التحسين. كل مساعدة تهم! شكرًا لك!",
-  ja: "★ プロジェクトの改善を続けるためにご支援ください。小さな支援でも大きな力になります！ありがとうございます！",
-  ko: "★ 프로젝트가 계속 발전할 수 있도록 지원해주세요. 작은 도움도 큰 힘이 됩니다! 감사합니다!",
-  "zh-cn": "★ 请支持本项目以便我们持续改进。每一点帮助都很重要！谢谢！",
-  "zh-tw": "★ 請支持本專案以便我們持續改進。每一點幫助都很重要！謝謝！",
-  hi: "★ परियोजना को बेहतर बनाने में मदद करें। आपका हर छोटा योगदान मायने रखता है! धन्यवाद!"
+    const locales = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "en"]).map(l => l.toLowerCase());
+    const base = (s)=> (s||"en").split("-")[0];
+
+    // RTL si aplica
+    (function setDir(){
+      const rtl = ["ar","fa","he","ur"];
+      if (rtl.includes(base(locales[0]))) document.documentElement.dir = "rtl";
+    })();
+
+    const copy = {
+      title: {
+        es: 'Estamos realizando mejoras,<br>¡volvemos pronto!',
+        en: "We're making improvements,<br>we'll be back soon!",
+        fr: "Nous apportons des améliorations,<br>nous revenons bientôt !",
+        de: "Wir nehmen Verbesserungen vor,<br>wir sind bald zurück!",
+        it: "Stiamo apportando miglioramenti,<br>torniamo presto!",
+        pt: "Estamos a fazer melhorias,<br>voltamos em breve!",
+        ar: "نجري تحسينات،<br>سنعود قريبًا!"
+      },
+      sub: {
+        es: 'Apoya el proyecto <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        en: 'Support the project <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        fr: 'Soutenez le projet <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        de: 'Unterstütze das Projekt <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        it: 'Sostieni il progetto <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        pt: 'Apoie o projeto <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        ar: 'ادعم المشروع <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>'
+      },
+      btn: {
+        es: "Apoyar",
+        en: "Support",
+        fr: "Soutenir",
+        de: "Unterstützen",
+        it: "Sostieni",
+        pt: "Apoiar",
+        ar: "دعم"
+      }
     };
 
-    const langRaw = (navigator.language || navigator.userLanguage || "en").toLowerCase();
-    const base = langRaw.split('-')[0];
-    const key = msgs[langRaw] ? langRaw : (msgs[base] ? base : "en");
-
-    const el = document.getElementById("astro-msg");
-    if (!el) return;
-
-    // Texto
-    el.textContent = msgs[key];
-
-    // RTL solo para árabe
-    if (key === "ar") {
-      const bubble = el.closest(".astro-bubble");
-      bubble.setAttribute("dir", "rtl");
-      bubble.style.textAlign = "right";
-    }
-  })();
+    const lang = base(locales[0]);
+    document.getElementById("msg").innerHTML = copy.title[lang] || copy.title.en;
+    document.getElementById("sub").innerHTML = copy.sub[lang] || copy.sub.en;
+    document.getElementById("btnLabel").textContent = copy.btn[lang] || copy.btn.en;
   </script>
-<a class="website-by" href="https://x.com/m0ur0ne" target="_blank">Website by mour0ne</a>
-
-
-
-
-
-
-
 </body>
 </html>
+
+
 
 
 
