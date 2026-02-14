@@ -166,7 +166,9 @@ p {
   
   <img src="logo-themesps4.png" alt="PS5 SHOP APPKG Logo"> </br>
   <div class="header"></div>
-  <a class="button" href="http://ps5shopappkg.x10.mx/">ENTER NOW</a>
+<a class="button" id="enterBtn" href="http://ps5shopappkg.x10.mx/">
+  ENTER NOW
+</a>
 
   <div class="astro-bottom">
     <img src="astros-playroom.gif" alt="Astro saludando">
@@ -178,6 +180,52 @@ p {
     <a href="https://www.paypal.me/mour0ne" target="_blank">https://www.paypal.me/mour0ne</a>
   </div>
 
+<script>
+(function () {
+
+  const PRIMARY = "http://ps5shopappkg.x10.mx/";
+  const FALLBACK = "https://ps5shopappkg.ddns.net/";
+  const CHECK_INTERVAL = 30 * 60 * 1000; // 30 minutos
+  const TIMEOUT = 5000; // 5 segundos para detectar caída
+
+  const btn = document.getElementById("enterBtn");
+  if (!btn) return;
+
+  function ping(url) {
+    return new Promise(resolve => {
+      const img = new Image();
+      const t = setTimeout(() => resolve(false), TIMEOUT);
+
+      img.onload = () => { clearTimeout(t); resolve(true); };
+      img.onerror = () => { clearTimeout(t); resolve(false); };
+
+      // URL inventada para probar el servidor
+      img.src = url + "ping_" + Date.now() + ".png";
+    });
+  }
+
+  async function updateLink() {
+    const primaryUp = await ping(PRIMARY);
+
+    if (primaryUp) {
+      btn.href = PRIMARY;
+    } else {
+      btn.href = FALLBACK;
+    }
+  }
+
+  // Ping inmediato al cargar
+  updateLink();
+
+  // Repetir cada 30 min
+  setInterval(updateLink, CHECK_INTERVAL);
+
+})();
+</script>
+
+
+
+     
   <script>
   (function () {
     const msgs = {
@@ -225,6 +273,7 @@ p {
 
 </body>
 </html>
+
 
 
 
