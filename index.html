@@ -185,31 +185,37 @@ p {
 
   const PRIMARY = "http://ps5shopappkg.x10.mx/";   
   const FALLBACK = "http://ps5shopappkg.ddns.net/"; 
-  const CHECK_INTERVAL = 30 * 60 * 1000; 
-  const TIMEOUT = 5000; 
+  const CHECK_INTERVAL = 30 * 60 * 1000; // 30 minutos
+  const TIMEOUT = 5000; // 5 segundos máximo
 
   const btn = document.getElementById("enterBtn");
   if (!btn) return;
 
-  function ping(url) {
-    return new Promise(resolve => {
-      const img = new Image();
-      const t = setTimeout(() => resolve(false), TIMEOUT);
+  async function pingIndex(url) {
+    try {
+      const controller = new AbortController();
+      const signal = controller.signal;
 
-      img.onload = () => { clearTimeout(t); resolve(true); };
-      img.onerror = () => { clearTimeout(t); resolve(false); };
+      // Timeout manual
+      const timeout = setTimeout(() => controller.abort(), TIMEOUT);
 
-      img.src = url + "ping_" + Date.now() + ".png";
-    });
+      const res = await fetch(url, { method: 'HEAD', cache: 'no-store', signal });
+      clearTimeout(timeout);
+      return res.ok;
+    } catch (e) {
+      return false;
+    }
   }
 
   async function updateLink() {
-    const primaryUp = await ping(PRIMARY);
+    const primaryUp = await pingIndex(PRIMARY);
     btn.href = primaryUp ? PRIMARY : FALLBACK;
   }
 
+  // Ping inmediato al cargar
   updateLink();
 
+  // Verificación cada 30 minutos
   setInterval(updateLink, CHECK_INTERVAL);
 
 })();
@@ -266,6 +272,7 @@ p {
 
 </body>
 </html>
+
 
 
 
