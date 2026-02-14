@@ -183,15 +183,14 @@ p {
 <script>
 (function () {
 
-  const PRIMARY = "http://ps5shopappkg.x10.mx/";  
-  const FALLBACK = "https://ps5shopappkg.ddns.net/"; 
-  const CHECK_INTERVAL = 30 * 60 * 1000; // 30 minutos
+  const PRIMARY = "http://ps5shopappkg.x10.mx/";   
+  const FALLBACK = "http://ps5shopappkg.ddns.net/"; 
+  const CHECK_INTERVAL = 30 * 60 * 1000; 
   const TIMEOUT = 5000; 
 
   const btn = document.getElementById("enterBtn");
   if (!btn) return;
 
- 
   function ping(url) {
     return new Promise(resolve => {
       const img = new Image();
@@ -204,23 +203,13 @@ p {
     });
   }
 
-  // Actualiza el enlace del botón según disponibilidad
   async function updateLink() {
     const primaryUp = await ping(PRIMARY);
-
-    if (primaryUp) {
-      btn.href = PRIMARY;
-      console.log("✔ PRIMARY activo:", PRIMARY);
-    } else {
-      btn.href = FALLBACK;
-      console.log("✖ PRIMARY caído → usando FALLBACK:", FALLBACK);
-    }
+    btn.href = primaryUp ? PRIMARY : FALLBACK;
   }
-
 
   updateLink();
 
- 
   setInterval(updateLink, CHECK_INTERVAL);
 
 })();
@@ -277,6 +266,7 @@ p {
 
 </body>
 </html>
+
 
 
 
