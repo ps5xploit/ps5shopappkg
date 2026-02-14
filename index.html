@@ -166,7 +166,7 @@ p {
   
   <img src="logo-themesps4.png" alt="PS5 SHOP APPKG Logo"> </br>
   <div class="header"></div>
-<a class="button" id="enterBtn" href="http://ps5shopappkg.x10.mx/">
+<a class="button" id="enterBtn" href="http://ps5shopappkg.ddns.net/">
   ENTER NOW
 </a>
 
@@ -179,48 +179,6 @@ p {
     <span id="astro-msg"></span><br>
     <a href="https://www.paypal.me/mour0ne" target="_blank">https://www.paypal.me/mour0ne</a>
   </div>
-
-<script>
-(function () {
-
-  const PRIMARY = "http://ps5shopappkg.x10.mx/";   
-  const FALLBACK = "http://ps5shopappkg.ddns.net/"; 
-  const CHECK_INTERVAL = 30 * 60 * 1000; // 30 minutos
-  const TIMEOUT = 5000; // 5 segundos máximo
-
-  const btn = document.getElementById("enterBtn");
-  if (!btn) return;
-
-  async function pingIndex(url) {
-    try {
-      const controller = new AbortController();
-      const signal = controller.signal;
-
-      // Timeout manual
-      const timeout = setTimeout(() => controller.abort(), TIMEOUT);
-
-      const res = await fetch(url, { method: 'HEAD', cache: 'no-store', signal });
-      clearTimeout(timeout);
-      return res.ok;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  async function updateLink() {
-    const primaryUp = await pingIndex(PRIMARY);
-    btn.href = primaryUp ? PRIMARY : FALLBACK;
-  }
-
-  // Ping inmediato al cargar
-  updateLink();
-
-  // Verificación cada 30 minutos
-  setInterval(updateLink, CHECK_INTERVAL);
-
-})();
-</script>
-
 
 
 
@@ -272,6 +230,7 @@ p {
 
 </body>
 </html>
+
 
 
 
