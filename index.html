@@ -171,58 +171,54 @@ p {
 </a>
 
   <div class="astro-bottom">
-    <img src="astros-playroom.gif" alt="Astro saludando">
-  </div>
+  <img src="astros-playroom.gif" alt="Astro saludando">
+</div>
 
-  <!-- Bocadillo con texto multilenguaje -->
-  <div class="astro-bubble">
-    <span id="astro-msg"></span><br>
-    <a href="https://www.paypal.me/mour0ne" target="_blank">https://www.paypal.me/mour0ne</a>
-  </div>
+<!-- Bocadillo con texto multilenguaje - AHORA CLICKEABLE -->
+<div class="astro-bubble" onclick="window.open('https://ko-fi.com/mouuu', '_blank')" style="cursor: pointer;">
+  <span id="astro-msg"></span><br>
+  <a href="https://ko-fi.com/mouuu" target="_blank" onclick="event.stopPropagation();">https://ko-fi.com/mouuu</a>
+</div>
 
+<script>
+(function () {
+  const msgs = {
+    es: "★ Apoya el proyecto para seguir mejorando. ¡Cada pequeña ayuda cuenta! ¡Gracias!",
+    en: "★ Support the project so we can keep improving. Every little bit helps! Thank you!",
+    fr: "★ Soutiens le projet pour que nous puissions continuer à l’améliorer. Chaque aide compte ! Merci !",
+    de: "★ Unterstütze das Projekt, damit wir es weiter verbessern können. Jeder Beitrag hilft! Danke!",
+    it: "★ Sostieni il progetto per continuare a migliorarlo. Ogni aiuto conta! Grazie!",
+    pt: "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
+    "pt-br": "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
+    ru: "★ Поддержите проект, чтобы мы продолжали развиваться. Любая помощь важна! Спасибо!",
+    ar: "★ ادعم المشروع كي نستمر في التحسين. كل مساعدة تهم! شكرًا لك!",
+    ja: "★ プロジェクトの改善を続けるためにご支援ください。小さな支援でも大きな力になります！ありがとうございます！",
+    ko: "★ 프로젝트가 계속 발전할 수 있도록 지원해주세요. 작은 도움도 큰 힘이 됩니다! 감사합니다!",
+    "zh-cn": "★ 请支持本项目以便我们持续改进。每一点帮助都很重要！谢谢！",
+    "zh-tw": "★ 請支持本專案以便我們持續改進。每一點幫助都很重要！謝謝！",
+    hi: "★ परियोजना को बेहतर बनाने में मदद करें। आपका हर छोटा योगदान मायने रखता है! धन्यवाद!"
+  };
 
+  const langRaw = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+  const base = langRaw.split('-')[0];
+  const key = msgs[langRaw] ? langRaw : (msgs[base] ? base : "en");
 
-     
-  <script>
-  (function () {
-    const msgs = {
-      es: "★ Apoya el proyecto para seguir mejorando. ¡Cada pequeña ayuda cuenta! ¡Gracias!",
-  en: "★ Support the project so we can keep improving. Every little bit helps! Thank you!",
-  fr: "★ Soutiens le projet pour que nous puissions continuer à l’améliorer. Chaque aide compte ! Merci !",
-  de: "★ Unterstütze das Projekt, damit wir es weiter verbessern können. Jeder Beitrag hilft! Danke!",
-  it: "★ Sostieni il progetto per continuare a migliorarlo. Ogni aiuto conta! Grazie!",
-  pt: "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
-  "pt-br": "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
-  ru: "★ Поддержите проект, чтобы мы продолжали развиваться. Любая помощь важна! Спасибо!",
-  ar: "★ ادعم المشروع كي نستمر في التحسين. كل مساعدة تهم! شكرًا لك!",
-  ja: "★ プロジェクトの改善を続けるためにご支援ください。小さな支援でも大きな力になります！ありがとうございます！",
-  ko: "★ 프로젝트가 계속 발전할 수 있도록 지원해주세요. 작은 도움도 큰 힘이 됩니다! 감사합니다!",
-  "zh-cn": "★ 请支持本项目以便我们持续改进。每一点帮助都很重要！谢谢！",
-  "zh-tw": "★ 請支持本專案以便我們持續改進。每一點幫助都很重要！謝謝！",
-  hi: "★ परियोजना को बेहतर बनाने में मदद करें। आपका हर छोटा योगदान मायने रखता है! धन्यवाद!"
-    };
+  const el = document.getElementById("astro-msg");
+  if (!el) return;
 
-    const langRaw = (navigator.language || navigator.userLanguage || "en").toLowerCase();
-    const base = langRaw.split('-')[0];
-    const key = msgs[langRaw] ? langRaw : (msgs[base] ? base : "en");
+  // Texto
+  el.textContent = msgs[key];
 
-    const el = document.getElementById("astro-msg");
-    if (!el) return;
+  // RTL solo para árabe
+  if (key === "ar") {
+    const bubble = el.closest(".astro-bubble");
+    bubble.setAttribute("dir", "rtl");
+    bubble.style.textAlign = "right";
+  }
+})();
+</script>
 
-    // Texto
-    el.textContent = msgs[key];
-
-    // RTL solo para árabe
-    if (key === "ar") {
-      const bubble = el.closest(".astro-bubble");
-      bubble.setAttribute("dir", "rtl");
-      bubble.style.textAlign = "right";
-    }
-  })();
-  </script>
 <a class="website-by" href="https://x.com/m0ur0ne" target="_blank">Website by mour0ne</a>
-
-
 
 
 
@@ -230,6 +226,7 @@ p {
 
 </body>
 </html>
+
 
 
 
