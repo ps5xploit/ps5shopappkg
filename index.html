@@ -24,25 +24,23 @@
       margin: 0;
       padding: 20px;
       position: relative;
-      overflow-x: hidden;
     }
 
- 
+
     .main-content {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       width: 100%;
-      max-width: 500px;
       margin: 0 auto;
     }
 
     .logo {
-      width: 90%;
-      max-width: 280px;
+      width: 100%;
+      max-width: 500px;
       height: auto;
-      margin-bottom: 25px;
+      margin-bottom: 40px;
       display: block;
     }
 
@@ -50,29 +48,29 @@
     .button {
       background-color: #FFD700;
       color: #000;
-      padding: 14px 28px;
+      padding: 22px 44px;
       text-decoration: none;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 28px;
       border: none;
-      border-radius: 50px;
-      box-shadow: 0 0 15px #FFD700;
+      border-radius: 60px;
+      box-shadow: 0 0 20px #FFD700;
       transition: transform 0.2s ease, box-shadow 0.3s ease;
       display: inline-block;
       text-align: center;
-      margin-top: 10px;
     }
 
     .button:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 25px #FFD700;
+      box-shadow: 0 0 35px #FFD700;
     }
+
 
     .astro-bottom {
       position: fixed;
-      bottom: 10px;
-      right: 10px;
-      width: 100px;
+      bottom: 15px;
+      right: 15px;
+      width: 160px;
       height: auto;
       overflow: visible;
       pointer-events: none;
@@ -95,22 +93,21 @@
       }
     }
 
-  
     .astro-bubble {
       position: fixed;
-      bottom: 95px;
-      right: 20px;
-      max-width: 200px;
+      bottom: 150px;
+      right: 190px;
+      max-width: 300px;
       background: #fff;
       color: #000;
       font-family: 'Rajdhani', sans-serif;
-      font-size: 11px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.3);
+      font-size: 16px;
+      padding: 12px 16px;
+      border-radius: 16px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.3);
       animation: bubbleIn 0.6s ease-out forwards;
       z-index: 10000;
-      line-height: 1.35;
+      line-height: 1.4;
       cursor: pointer;
     }
 
@@ -118,9 +115,9 @@
       content: "";
       position: absolute;
       top: 50%;
-      right: -6px;
+      right: -10px;
       transform: translateY(-50%);
-      border-width: 6px 0 6px 6px;
+      border-width: 10px 0 10px 10px;
       border-style: solid;
       border-color: transparent transparent transparent #fff;
     }
@@ -129,7 +126,7 @@
       color: #0070ba;
       text-decoration: none;
       font-weight: bold;
-      font-size: 11px;
+      font-size: 16px;
       display: inline-block;
       word-break: break-all;
     }
@@ -143,20 +140,20 @@
       to   { opacity: 1; transform: scale(1); }
     }
 
-  
+
     .website-by {
       position: fixed;
-      bottom: 12px;
-      left: 12px;
+      bottom: 15px;
+      left: 15px;
       font-family: 'Rajdhani', sans-serif;
-      font-size: 11px;
+      font-size: 16px;
       color: #fff;
-      opacity: 0.6;
+      opacity: 0.7;
       text-decoration: none;
       transition: opacity 0.3s ease;
       z-index: 10000;
-      background: rgba(0,0,0,0.5);
-      padding: 4px 8px;
+      background: rgba(0,0,0,0.4);
+      padding: 5px 12px;
       border-radius: 20px;
     }
 
@@ -164,7 +161,7 @@
       opacity: 1;
     }
 
-    /* ========== ESTILOS PARA PS5 (175% ZOOM) ========== */
+    /* ========== ESTILOS EXCLUSIVOS PARA PS5 (175% ZOOM) ========== */
     @media (min-width: 800px) {
       body.ps5-zoom {
         padding: 0;
@@ -172,13 +169,12 @@
       }
       
       .ps5-zoom .main-content {
-        max-width: none;
         margin-top: -60px;
       }
       
       .ps5-zoom .logo {
-        width: auto;
         max-width: none;
+        width: auto;
         height: 525px;
         margin-bottom: 30px;
       }
@@ -188,10 +184,6 @@
         font-size: 32px;
         border-radius: 18px;
         box-shadow: 0 0 26px #FFD700;
-      }
-      
-      .ps5-zoom .button:hover {
-        box-shadow: 0 0 44px #FFD700;
       }
       
       .ps5-zoom .astro-bottom {
@@ -227,45 +219,34 @@
       }
     }
 
-    /* Ajuste para pantallas de PS5 en 720p */
-    @media (max-height: 700px) and (min-width: 800px) {
-      .ps5-zoom .logo { height: 420px; }
-      .ps5-zoom .button { padding: 20px 40px; font-size: 26px; }
-      .ps5-zoom .astro-bottom { width: 250px; bottom: 0; right: 10px; }
-      .ps5-zoom .astro-bubble { bottom: 220px; right: 290px; font-size: 16px; max-width: 300px; }
-      .ps5-zoom .astro-bubble a { font-size: 16px; }
-      .ps5-zoom .website-by { font-size: 16px; }
-      .ps5-zoom .main-content { margin-top: -40px; }
-    }
-
-    /* Ajustes para móviles muy pequeños */
-    @media (max-width: 480px) {
-      .astro-bubble {
-        max-width: 170px;
-        font-size: 9px;
-        bottom: 85px;
-        right: 15px;
-        padding: 6px 10px;
-      }
-      .astro-bubble a {
-        font-size: 9px;
-      }
-      .astro-bottom {
-        width: 80px;
-        bottom: 8px;
-        right: 8px;
-      }
-      .website-by {
-        font-size: 9px;
-        bottom: 8px;
-        left: 8px;
+  
+    @media (max-width: 600px) {
+      .logo {
+        max-width: 350px;
       }
       .button {
-        padding: 12px 24px;
-        font-size: 16px;
+        padding: 16px 32px;
+        font-size: 22px;
       }
-      .logo {
-        max-width: 220px;
+      .astro-bottom {
+        width: 120px;
+        bottom: 10px;
+        right: 10px;
+      }
+      .astro-bubble {
+        bottom: 110px;
+        right: 140px;
+        max-width: 230px;
+        font-size: 13px;
+        padding: 8px 12px;
+      }
+      .astro-bubble a {
+        font-size: 13px;
+      }
+      .website-by {
+        font-size: 12px;
+        bottom: 10px;
+        left: 10px;
       }
     }
   </style>
