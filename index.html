@@ -4,9 +4,14 @@
   <meta name="google-adsense-account" content="ca-pub-7277543096175575">
   <meta charset="UTF-8">
   <title>🟡   🇸‌🇭‌🇴‌🇵‌ 🇦‌🇵‌🇵‌🇰‌🇬‌ 📦 🟡 🇼‌-🇧‌🇪‌🇹‌🇦‌ 🔹🇭‌🇴‌🇲‌🇪‌🇧‌🇷‌🇪‌🇼</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <style>
-    /* Escala GLOBAL al 150% */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       background-color: #000;
       color: #fff;
@@ -14,35 +19,27 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start;
+      justify-content: center; /* Centrado vertical completo */
       min-height: 100vh;
       margin: 0;
-      padding-top: 30px; /* reducido porque la escala amplía los márgenes */
-      overflow: auto;    /* permitir scroll si es necesario al 150% */
-      transform: scale(1.5);
-      transform-origin: top center;
-      width: 100%;
-      /* ancho efectivo: 100% / 1.5 para evitar scroll lateral innecesario */
-      width: calc(100% / 1.5);
-      margin-left: auto;
-      margin-right: auto;
+      padding: 0;
+      overflow: hidden; /* Sin scroll */
+      position: relative;
     }
 
-    /* Ajuste para que el header no desborde */
-    .header {
+    /* Contenedor principal que agrupa logo + botón */
+    .main-content {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      margin-bottom: 1em;
+      justify-content: center;
+      margin-top: -40px; /* Ajuste fino para subir todo un poco */
     }
 
     img {
-      height: 300px; /* Imagen más grande */
-      margin-right: 20px;
-    }
-
-    h1 {
-      font-size: 2em;
-      margin: 0;
+      height: 300px;
+      margin-bottom: 20px;
+      display: block;
     }
 
     .button {
@@ -56,6 +53,7 @@
       border-radius: 10px;
       box-shadow: 0 0 15px #FFD700;
       transition: transform 0.2s ease, box-shadow 0.3s ease;
+      display: inline-block;
     }
 
     .button:hover {
@@ -63,45 +61,52 @@
       box-shadow: 0 0 25px #FFD700;
     }
 
-    p {
-      margin-top: 2em;
-      font-size: 14px;
-      opacity: 0.6;
-    }
-
-    .website-by {
+    /* Astro - reposicionado para que quede dentro de la pantalla */
+    .astro-bottom {
       position: fixed;
-      bottom: 10px;
-      left: 10px;
-      font-family: 'Rajdhani', sans-serif;
-      font-size: 14px;
-      color: #fff;
-      opacity: 0.7;
-      text-decoration: none;
-      transition: opacity 0.3s ease, transform 0.2s ease;
-      z-index: 10000;
+      bottom: 5px;
+      right: 20px;
+      width: 180px; /* Ligeramente más pequeño para que no robe espacio */
+      height: auto;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: astroIn 0.8s ease-out 0.2s forwards;
     }
 
-    .website-by:hover {
-      opacity: 1;
-      transform: scale(1.05);
+    .astro-bottom img {
+      width: 100%;
+      height: auto;
+      bottom: 0;
+      position: relative;
     }
 
+    @keyframes astroIn {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Bocadillo - reposicionado arriba de Astro */
     .astro-bubble {
       position: fixed;
-      bottom: 100px;
-      right: 250px;
-      max-width: 240px;
+      bottom: 160px;
+      right: 220px;
+      max-width: 220px;
       background: #fff;
       color: #000;
       font-family: 'Rajdhani', sans-serif;
-      font-size: 13px;
+      font-size: 12px;
       padding: 6px 10px;
       border-radius: 10px;
       box-shadow: 0 0 8px rgba(0,0,0,0.3);
       animation: bubbleIn 0.6s ease-out forwards;
       z-index: 10000;
       line-height: 1.25;
+      cursor: pointer;
     }
 
     .astro-bubble::after {
@@ -119,7 +124,7 @@
       color: #0070ba;
       text-decoration: none;
       font-weight: bold;
-      font-size: 13px;
+      font-size: 12px;
     }
 
     .astro-bubble a:hover {
@@ -131,61 +136,53 @@
       to   { opacity: 1; transform: scale(1); }
     }
 
-    .astro-bottom {
-      transform: translateY(40px);
-      opacity: 0;
-      animation: astroIn 0.8s ease-out 0.2s forwards;
-      will-change: transform, opacity;
-    }
-
-    @keyframes astroIn {
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .astro-bottom {
-        animation: none;
-        transform: none;
-        opacity: 1;
-      }
-    }
-
-    .astro-bottom {
+    /* Website by - abajo a la izquierda, justo en el borde */
+    .website-by {
       position: fixed;
-      bottom: 0;
-      right: 50px;
-      width: 230px;
-      height: 190px;
-      overflow: hidden;
-      pointer-events: none;
-      z-index: 9999;
+      bottom: 8px;
+      left: 12px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12px;
+      color: #fff;
+      opacity: 0.7;
+      text-decoration: none;
+      transition: opacity 0.3s ease;
+      z-index: 10000;
     }
 
-    .astro-bottom img {
-      width: 100%;
-      height: auto;
-      position: relative;
-      bottom: 18px;
+    .website-by:hover {
+      opacity: 1;
+    }
+
+    /* Ajuste para pantallas muy pequeñas (ej. PS5 en 720p) */
+    @media (max-height: 600px) {
+      img { height: 220px; }
+      .button { padding: 10px 20px; font-size: 16px; }
+      .astro-bottom { width: 140px; bottom: 0; right: 10px; }
+      .astro-bubble { bottom: 120px; right: 160px; font-size: 10px; max-width: 180px; }
+      .website-by { font-size: 10px; }
+      .main-content { margin-top: -20px; }
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <img src="logo-themesps4.png" alt="PS5 SHOP APPKG Logo"><br>
-  <div class="header"></div>
-  <a class="button" id="enterBtn" href="https://ps5shopappkg.infy.uk/">ENTER NOW</a>
+
+  <div class="main-content">
+    <img src="logo-themesps4.png" alt="PS5 SHOP APPKG Logo">
+    <a class="button" id="enterBtn" href="https://ps5shopappkg.infy.uk/">ENTER NOW</a>
+  </div>
 
   <div class="astro-bottom">
     <img src="astros-playroom.gif" alt="Astro saludando">
   </div>
 
-  <div class="astro-bubble" onclick="window.open('https://ko-fi.com/mouuu', '_blank')" style="cursor: pointer;">
+  <div class="astro-bubble" onclick="window.open('https://ko-fi.com/mouuu', '_blank')">
     <span id="astro-msg"></span><br>
     <a href="https://ko-fi.com/mouuu" target="_blank" onclick="event.stopPropagation();">https://ko-fi.com/mouuu</a>
   </div>
+
+  <a class="website-by" href="https://x.com/m0ur0ne" target="_blank">Website by mour0ne</a>
 
   <script>
     (function () {
@@ -209,16 +206,15 @@
       const base = langRaw.split('-')[0];
       const key = msgs[langRaw] ? langRaw : (msgs[base] ? base : "en");
       const el = document.getElementById("astro-msg");
-      if (!el) return;
-      el.textContent = msgs[key];
+      if (el) el.textContent = msgs[key];
       if (key === "ar") {
-        const bubble = el.closest(".astro-bubble");
-        bubble.setAttribute("dir", "rtl");
-        bubble.style.textAlign = "right";
+        const bubble = document.querySelector(".astro-bubble");
+        if (bubble) {
+          bubble.setAttribute("dir", "rtl");
+          bubble.style.textAlign = "right";
+        }
       }
     })();
   </script>
-
-  <a class="website-by" href="https://x.com/m0ur0ne" target="_blank">Website by mour0ne</a>
 </body>
 </html>
