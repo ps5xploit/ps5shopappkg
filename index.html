@@ -1,292 +1,224 @@
 <html lang="en" manifest="cache.appcache">
-<head><script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7277543096175575"
-     crossorigin="anonymous"></script> <meta name="google-adsense-account" content="ca-pub-7277543096175575">
+<head>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7277543096175575" crossorigin="anonymous"></script>
+  <meta name="google-adsense-account" content="ca-pub-7277543096175575">
   <meta charset="UTF-8">
-  <title>🟡​   🇸‌🇭‌🇴‌🇵‌ 🇦‌🇵‌🇵‌🇰‌🇬‌ 📦 🟡 🇼‌-🇧‌🇪‌🇹‌🇦‌ 🔹🇭‌🇴‌🇲‌🇪‌🇧‌🇷‌🇪‌🇼</title>
+  <title>🟡   🇸‌🇭‌🇴‌🇵‌ 🇦‌🇵‌🇵‌🇰‌🇬‌ 📦 🟡 🇼‌-🇧‌🇪‌🇹‌🇦‌ 🔹🇭‌🇴‌🇲‌🇪‌🇧‌🇷‌🇪‌🇼</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-.website-by {
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 14px;
-  color: #fff;
-  opacity: 0.7;
-  text-decoration: none;
-  transition: opacity 0.3s ease, transform 0.2s ease;
-  z-index: 10000;
-}
-.website-by:hover {
-  opacity: 1;
-  transform: scale(1.05);
-}
+    /* Escala GLOBAL al 150% */
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 30px; /* reducido porque la escala amplía los márgenes */
+      overflow: auto;    /* permitir scroll si es necesario al 150% */
+      transform: scale(1.5);
+      transform-origin: top center;
+      width: 100%;
+      /* ancho efectivo: 100% / 1.5 para evitar scroll lateral innecesario */
+      width: calc(100% / 1.5);
+      margin-left: auto;
+      margin-right: auto;
+    }
 
+    /* Ajuste para que el header no desborde */
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1em;
+    }
 
-.astro-bubble {
-  position: fixed;
-  bottom: 100px; 
-  right: 250px;  
-  max-width: 240px;
-  background: #fff;
-  color: #000;
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 13px;
-  padding: 6px 10px;
-  border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0,0,0,0.3);
-  animation: bubbleIn 0.6s ease-out forwards;
-  z-index: 10000;
-  line-height: 1.25;
-}
+    img {
+      height: 300px; /* Imagen más grande */
+      margin-right: 20px;
+    }
 
-/* Triángulo a la derecha */
-.astro-bubble::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  right: -8px;
-  transform: translateY(-50%);
-  border-width: 8px 0 8px 8px;
-  border-style: solid;
-  border-color: transparent transparent transparent #fff;
-}
+    h1 {
+      font-size: 2em;
+      margin: 0;
+    }
 
-.astro-bubble a {
-  color: #0070ba;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 13px;
-}
-.astro-bubble a:hover {
-  text-decoration: underline;
-}
+    .button {
+      background-color: #FFD700;
+      color: #000;
+      padding: 15px 30px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      box-shadow: 0 0 15px #FFD700;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+    }
 
-/* Animación de entrada del bocadillo */
-@keyframes bubbleIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to   { opacity: 1; transform: scale(1); }
-}
+    .button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px #FFD700;
+    }
 
-/* Astro asomando desde abajo */
-.astro-bottom {
-  transform: translateY(40px);
-  opacity: 0;
-  animation: astroIn 0.8s ease-out 0.2s forwards;
-  will-change: transform, opacity;
-}
+    p {
+      margin-top: 2em;
+      font-size: 14px;
+      opacity: 0.6;
+    }
 
-@keyframes astroIn {
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
+    .website-by {
+      position: fixed;
+      bottom: 10px;
+      left: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      color: #fff;
+      opacity: 0.7;
+      text-decoration: none;
+      transition: opacity 0.3s ease, transform 0.2s ease;
+      z-index: 10000;
+    }
 
-@media (prefers-reduced-motion: reduce) {
-  .astro-bottom {
-    animation: none;
-    transform: none;
-    opacity: 1;
-  }
-}
+    .website-by:hover {
+      opacity: 1;
+      transform: scale(1.05);
+    }
 
-.astro-bottom {
-  position: fixed;
-  bottom: 0;
-  right: 50px;
-  width: 230px;   /* = ancho del GIF */
-  height: 190px;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: 9999;
-}
+    .astro-bubble {
+      position: fixed;
+      bottom: 100px;
+      right: 250px;
+      max-width: 240px;
+      background: #fff;
+      color: #000;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.3);
+      animation: bubbleIn 0.6s ease-out forwards;
+      z-index: 10000;
+      line-height: 1.25;
+    }
 
-.astro-bottom img {
-  width: 100%;    
-  height: auto;
-  position: relative;
-  bottom: 18px;
-}
+    .astro-bubble::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -8px;
+      transform: translateY(-50%);
+      border-width: 8px 0 8px 8px;
+      border-style: solid;
+      border-color: transparent transparent transparent #fff;
+    }
 
-/* Página */
-body {
-  background-color: #000;
-  color: #fff;
-  font-family: 'Rajdhani', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* pegado arriba */
-  min-height: 100vh; /* siempre al menos la altura de la pantalla */
-  margin: 0;
-  padding-top: 60px; /* sube/baja todo el bloque */
-  overflow: hidden; /* evita barra de scroll innecesaria */
-}
+    .astro-bubble a {
+      color: #0070ba;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 13px;
+    }
 
-.header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1.5em;
-}
-img {
-  height: 300px; /* Imagen más grande */
-  margin-right: 20px;
-}
-h1 {
-  font-size: 2em;
-  margin: 0;
-}
-.button {
-  background-color: #FFD700;
-  color: #000;
-  padding: 15px 30px;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 18px;
-  border: none;
-  border-radius: 10px;
-  box-shadow: 0 0 15px #FFD700;
-  transition: transform 0.2s ease, box-shadow 0.3s ease;
-}
-.button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 25px #FFD700;
-}
-p {
-  margin-top: 2em;
-  font-size: 14px;
-  opacity: 0.6;
-}
+    .astro-bubble a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes bubbleIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .astro-bottom {
+      transform: translateY(40px);
+      opacity: 0;
+      animation: astroIn 0.8s ease-out 0.2s forwards;
+      will-change: transform, opacity;
+    }
+
+    @keyframes astroIn {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .astro-bottom {
+        animation: none;
+        transform: none;
+        opacity: 1;
+      }
+    }
+
+    .astro-bottom {
+      position: fixed;
+      bottom: 0;
+      right: 50px;
+      width: 230px;
+      height: 190px;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    .astro-bottom img {
+      width: 100%;
+      height: auto;
+      position: relative;
+      bottom: 18px;
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap" rel="stylesheet">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7277543096175575"
-     crossorigin="anonymous"></script></head>
+</head>
 <body>
-  
-  <img src="logo-themesps4.png" alt="PS5 SHOP APPKG Logo"> </br>
+  <img src="logo-themesps4.png" alt="PS5 SHOP APPKG Logo"><br>
   <div class="header"></div>
-<a class="button" id="enterBtn" href="https://ps5shopappkg.infy.uk/">
-  ENTER NOW
-</a>
+  <a class="button" id="enterBtn" href="https://ps5shopappkg.infy.uk/">ENTER NOW</a>
 
   <div class="astro-bottom">
-  <img src="astros-playroom.gif" alt="Astro saludando">
-</div>
+    <img src="astros-playroom.gif" alt="Astro saludando">
+  </div>
 
-<!-- Bocadillo con texto multilenguaje - AHORA CLICKEABLE -->
-<div class="astro-bubble" onclick="window.open('https://ko-fi.com/mouuu', '_blank')" style="cursor: pointer;">
-  <span id="astro-msg"></span><br>
-  <a href="https://ko-fi.com/mouuu" target="_blank" onclick="event.stopPropagation();">https://ko-fi.com/mouuu</a>
-</div>
+  <div class="astro-bubble" onclick="window.open('https://ko-fi.com/mouuu', '_blank')" style="cursor: pointer;">
+    <span id="astro-msg"></span><br>
+    <a href="https://ko-fi.com/mouuu" target="_blank" onclick="event.stopPropagation();">https://ko-fi.com/mouuu</a>
+  </div>
 
-<script>
-(function () {
-  const msgs = {
-    es: "★ Apoya el proyecto para seguir mejorando. ¡Cada pequeña ayuda cuenta! ¡Gracias!",
-    en: "★ Support the project so we can keep improving. Every little bit helps! Thank you!",
-    fr: "★ Soutiens le projet pour que nous puissions continuer à l’améliorer. Chaque aide compte ! Merci !",
-    de: "★ Unterstütze das Projekt, damit wir es weiter verbessern können. Jeder Beitrag hilft! Danke!",
-    it: "★ Sostieni il progetto per continuare a migliorarlo. Ogni aiuto conta! Grazie!",
-    pt: "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
-    "pt-br": "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
-    ru: "★ Поддержите проект, чтобы мы продолжали развиваться. Любая помощь важна! Спасибо!",
-    ar: "★ ادعم المشروع كي نستمر في التحسين. كل مساعدة تهم! شكرًا لك!",
-    ja: "★ プロジェクトの改善を続けるためにご支援ください。小さな支援でも大きな力になります！ありがとうございます！",
-    ko: "★ 프로젝트가 계속 발전할 수 있도록 지원해주세요. 작은 도움도 큰 힘이 됩니다! 감사합니다!",
-    "zh-cn": "★ 请支持本项目以便我们持续改进。每一点帮助都很重要！谢谢！",
-    "zh-tw": "★ 請支持本專案以便我們持續改進。每一點幫助都很重要！謝謝！",
-    hi: "★ परियोजना को बेहतर बनाने में मदद करें। आपका हर छोटा योगदान मायने रखता है! धन्यवाद!"
-  };
+  <script>
+    (function () {
+      const msgs = {
+        es: "★ Apoya el proyecto para seguir mejorando. ¡Cada pequeña ayuda cuenta! ¡Gracias!",
+        en: "★ Support the project so we can keep improving. Every little bit helps! Thank you!",
+        fr: "★ Soutiens le projet pour que nous puissions continuer à l'améliorer. Chaque aide compte ! Merci !",
+        de: "★ Unterstütze das Projekt, damit wir es weiter verbessern können. Jeder Beitrag hilft! Danke!",
+        it: "★ Sostieni il progetto per continuare a migliorarlo. Ogni aiuto conta! Grazie!",
+        pt: "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
+        "pt-br": "★ Apoie o projeto para continuarmos melhorando. Toda ajuda conta! Obrigado!",
+        ru: "★ Поддержите проект, чтобы мы продолжали развиваться. Любая помощь важна! Спасибо!",
+        ar: "★ ادعم المشروع كي نستمر في التحسين. كل مساعدة تهم! شكرًا لك!",
+        ja: "★ プロジェクトの改善を続けるためにご支援ください。小さな支援でも大きな力になります！ありがとうございます！",
+        ko: "★ 프로젝트가 계속 발전할 수 있도록 지원해주세요. 작은 도움도 큰 힘이 됩니다! 감사합니다!",
+        "zh-cn": "★ 请支持本项目以便我们持续改进。每一点帮助都很重要！谢谢！",
+        "zh-tw": "★ 請支持本專案以便我們持續改進。每一點幫助都很重要！謝謝！",
+        hi: "★ परियोजना को बेहतर बनाने में मदद करें। आपका हर छोटा योगदान मायने रखता है! धन्यवाद!"
+      };
+      const langRaw = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+      const base = langRaw.split('-')[0];
+      const key = msgs[langRaw] ? langRaw : (msgs[base] ? base : "en");
+      const el = document.getElementById("astro-msg");
+      if (!el) return;
+      el.textContent = msgs[key];
+      if (key === "ar") {
+        const bubble = el.closest(".astro-bubble");
+        bubble.setAttribute("dir", "rtl");
+        bubble.style.textAlign = "right";
+      }
+    })();
+  </script>
 
-  const langRaw = (navigator.language || navigator.userLanguage || "en").toLowerCase();
-  const base = langRaw.split('-')[0];
-  const key = msgs[langRaw] ? langRaw : (msgs[base] ? base : "en");
-
-  const el = document.getElementById("astro-msg");
-  if (!el) return;
-
-  // Texto
-  el.textContent = msgs[key];
-
-  // RTL solo para árabe
-  if (key === "ar") {
-    const bubble = el.closest(".astro-bubble");
-    bubble.setAttribute("dir", "rtl");
-    bubble.style.textAlign = "right";
-  }
-})();
-</script>
-
-<a class="website-by" href="https://x.com/m0ur0ne" target="_blank">Website by mour0ne</a>
-
-
-
-
-
+  <a class="website-by" href="https://x.com/m0ur0ne" target="_blank">Website by mour0ne</a>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
