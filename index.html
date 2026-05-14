@@ -19,54 +19,56 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center; /* Centrado vertical completo */
+      justify-content: center;
       min-height: 100vh;
       margin: 0;
       padding: 0;
-      overflow: hidden; /* Sin scroll */
+      overflow: hidden;
       position: relative;
     }
 
-    /* Contenedor principal que agrupa logo + botón */
+    /* Contenedor principal */
     .main-content {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin-top: -40px; /* Ajuste fino para subir todo un poco */
+      margin-top: -60px; /* Ajustado para 175% */
     }
 
+    /* Logo más grande: 300px * 1.75 = 525px */
     img {
-      height: 300px;
-      margin-bottom: 20px;
+      height: 525px;
+      margin-bottom: 30px;
       display: block;
     }
 
+    /* Botón más grande */
     .button {
       background-color: #FFD700;
       color: #000;
-      padding: 15px 30px;
+      padding: 26px 52px;  /* 15*1.75 ≈ 26, 30*1.75 ≈ 52 */
       text-decoration: none;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 32px;     /* 18*1.75 ≈ 32 */
       border: none;
-      border-radius: 10px;
-      box-shadow: 0 0 15px #FFD700;
+      border-radius: 18px;  /* 10*1.75 ≈ 18 */
+      box-shadow: 0 0 26px #FFD700; /* 15*1.75 ≈ 26 */
       transition: transform 0.2s ease, box-shadow 0.3s ease;
       display: inline-block;
     }
 
     .button:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 25px #FFD700;
+      box-shadow: 0 0 44px #FFD700; /* 25*1.75 ≈ 44 */
     }
 
-    /* Astro - reposicionado para que quede dentro de la pantalla */
+    /* Astro - más grande y reposicionado */
     .astro-bottom {
       position: fixed;
       bottom: 5px;
       right: 20px;
-      width: 180px; /* Ligeramente más pequeño para que no robe espacio */
+      width: 315px;  /* 180px * 1.75 = 315px */
       height: auto;
       overflow: visible;
       pointer-events: none;
@@ -90,19 +92,19 @@
       }
     }
 
-    /* Bocadillo - reposicionado arriba de Astro */
+    /* Bocadillo más grande - encima de Astro */
     .astro-bubble {
       position: fixed;
-      bottom: 160px;
-      right: 220px;
-      max-width: 220px;
+      bottom: 280px;   /* 160px * 1.75 = 280px */
+      right: 385px;    /* 220px * 1.75 = 385px */
+      max-width: 385px; /* 220px * 1.75 = 385px */
       background: #fff;
       color: #000;
       font-family: 'Rajdhani', sans-serif;
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 10px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.3);
+      font-size: 21px;   /* 12px * 1.75 = 21px */
+      padding: 10px 18px; /* 6*1.75≈10, 10*1.75≈18 */
+      border-radius: 18px;
+      box-shadow: 0 0 14px rgba(0,0,0,0.3);
       animation: bubbleIn 0.6s ease-out forwards;
       z-index: 10000;
       line-height: 1.25;
@@ -113,9 +115,9 @@
       content: "";
       position: absolute;
       top: 50%;
-      right: -8px;
+      right: -14px; /* 8*1.75=14 */
       transform: translateY(-50%);
-      border-width: 8px 0 8px 8px;
+      border-width: 14px 0 14px 14px; /* 8*1.75=14 */
       border-style: solid;
       border-color: transparent transparent transparent #fff;
     }
@@ -124,7 +126,7 @@
       color: #0070ba;
       text-decoration: none;
       font-weight: bold;
-      font-size: 12px;
+      font-size: 21px; /* 12*1.75=21 */
     }
 
     .astro-bubble a:hover {
@@ -136,13 +138,13 @@
       to   { opacity: 1; transform: scale(1); }
     }
 
-    /* Website by - abajo a la izquierda, justo en el borde */
+    /* Website by - más grande */
     .website-by {
       position: fixed;
-      bottom: 8px;
-      left: 12px;
+      bottom: 14px;    /* 8px * 1.75 = 14px */
+      left: 21px;      /* 12px * 1.75 = 21px */
       font-family: 'Rajdhani', sans-serif;
-      font-size: 12px;
+      font-size: 21px; /* 12px * 1.75 = 21px */
       color: #fff;
       opacity: 0.7;
       text-decoration: none;
@@ -154,14 +156,15 @@
       opacity: 1;
     }
 
-    /* Ajuste para pantallas muy pequeñas (ej. PS5 en 720p) */
-    @media (max-height: 600px) {
-      img { height: 220px; }
-      .button { padding: 10px 20px; font-size: 16px; }
-      .astro-bottom { width: 140px; bottom: 0; right: 10px; }
-      .astro-bubble { bottom: 120px; right: 160px; font-size: 10px; max-width: 180px; }
-      .website-by { font-size: 10px; }
-      .main-content { margin-top: -20px; }
+    /* Ajuste para pantallas muy pequeñas (ej. PS5 en 720p) - adaptado al 175% */
+    @media (max-height: 700px) {
+      img { height: 420px; }
+      .button { padding: 20px 40px; font-size: 26px; }
+      .astro-bottom { width: 250px; bottom: 0; right: 10px; }
+      .astro-bubble { bottom: 220px; right: 290px; font-size: 16px; max-width: 300px; }
+      .astro-bubble a { font-size: 16px; }
+      .website-by { font-size: 16px; }
+      .main-content { margin-top: -40px; }
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap" rel="stylesheet">
