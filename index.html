@@ -4,7 +4,7 @@
   <meta name="google-adsense-account" content="ca-pub-7277543096175575">
   <meta charset="UTF-8">
   <title>🟡   🇸‌🇭‌🇴‌🇵‌ 🇦‌🇵‌🇵‌🇰‌🇬‌ 📦 🟡 🇼‌-🇧‌🇪‌🇹‌🇦‌ 🔹🇭‌🇴‌🇲‌🇪‌🇧‌🇷‌🇪‌🇼</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
   <style>
     * {
       margin: 0;
@@ -22,38 +22,45 @@
       justify-content: center;
       min-height: 100vh;
       margin: 0;
-      padding: 0;
-      overflow: hidden;
+      padding: 20px;
       position: relative;
+      overflow-x: hidden;
     }
 
-    /*  (para móvil SIN ZOOM) */
+ 
     .main-content {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin-top: -20px;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
     }
 
-    img {
-      height: 300px;
-      margin-bottom: 20px;
+    .logo {
+      width: 90%;
+      max-width: 280px;
+      height: auto;
+      margin-bottom: 25px;
       display: block;
     }
+
 
     .button {
       background-color: #FFD700;
       color: #000;
-      padding: 15px 30px;
+      padding: 14px 28px;
       text-decoration: none;
       font-weight: bold;
       font-size: 18px;
       border: none;
-      border-radius: 10px;
+      border-radius: 50px;
       box-shadow: 0 0 15px #FFD700;
       transition: transform 0.2s ease, box-shadow 0.3s ease;
       display: inline-block;
+      text-align: center;
+      margin-top: 10px;
     }
 
     .button:hover {
@@ -63,9 +70,9 @@
 
     .astro-bottom {
       position: fixed;
-      bottom: 5px;
-      right: 20px;
-      width: 180px;
+      bottom: 10px;
+      right: 10px;
+      width: 100px;
       height: auto;
       overflow: visible;
       pointer-events: none;
@@ -78,8 +85,7 @@
     .astro-bottom img {
       width: 100%;
       height: auto;
-      bottom: 0;
-      position: relative;
+      display: block;
     }
 
     @keyframes astroIn {
@@ -89,21 +95,22 @@
       }
     }
 
+  
     .astro-bubble {
       position: fixed;
-      bottom: 160px;
-      right: 220px;
-      max-width: 220px;
+      bottom: 95px;
+      right: 20px;
+      max-width: 200px;
       background: #fff;
       color: #000;
       font-family: 'Rajdhani', sans-serif;
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 10px;
+      font-size: 11px;
+      padding: 8px 12px;
+      border-radius: 12px;
       box-shadow: 0 0 8px rgba(0,0,0,0.3);
       animation: bubbleIn 0.6s ease-out forwards;
       z-index: 10000;
-      line-height: 1.25;
+      line-height: 1.35;
       cursor: pointer;
     }
 
@@ -111,9 +118,9 @@
       content: "";
       position: absolute;
       top: 50%;
-      right: -8px;
+      right: -6px;
       transform: translateY(-50%);
-      border-width: 8px 0 8px 8px;
+      border-width: 6px 0 6px 6px;
       border-style: solid;
       border-color: transparent transparent transparent #fff;
     }
@@ -122,7 +129,9 @@
       color: #0070ba;
       text-decoration: none;
       font-weight: bold;
-      font-size: 12px;
+      font-size: 11px;
+      display: inline-block;
+      word-break: break-all;
     }
 
     .astro-bubble a:hover {
@@ -134,46 +143,63 @@
       to   { opacity: 1; transform: scale(1); }
     }
 
+  
     .website-by {
       position: fixed;
-      bottom: 8px;
+      bottom: 12px;
       left: 12px;
       font-family: 'Rajdhani', sans-serif;
-      font-size: 12px;
+      font-size: 11px;
       color: #fff;
-      opacity: 0.7;
+      opacity: 0.6;
       text-decoration: none;
       transition: opacity 0.3s ease;
       z-index: 10000;
+      background: rgba(0,0,0,0.5);
+      padding: 4px 8px;
+      border-radius: 20px;
     }
 
     .website-by:hover {
       opacity: 1;
     }
 
-    /* ========== ESTILOS EXCLUSIVOS PARA PS5 (175% ZOOM) ========== */
+    /* ========== ESTILOS PARA PS5 (175% ZOOM) ========== */
     @media (min-width: 800px) {
+      body.ps5-zoom {
+        padding: 0;
+        overflow: hidden;
+      }
+      
       .ps5-zoom .main-content {
+        max-width: none;
         margin-top: -60px;
       }
-      .ps5-zoom img {
+      
+      .ps5-zoom .logo {
+        width: auto;
+        max-width: none;
         height: 525px;
         margin-bottom: 30px;
       }
+      
       .ps5-zoom .button {
         padding: 26px 52px;
         font-size: 32px;
         border-radius: 18px;
         box-shadow: 0 0 26px #FFD700;
       }
+      
       .ps5-zoom .button:hover {
         box-shadow: 0 0 44px #FFD700;
       }
+      
       .ps5-zoom .astro-bottom {
         width: 315px;
         bottom: 5px;
         right: 20px;
       }
+      
       .ps5-zoom .astro-bubble {
         bottom: 280px;
         right: 385px;
@@ -182,23 +208,28 @@
         padding: 10px 18px;
         border-radius: 18px;
       }
+      
       .ps5-zoom .astro-bubble::after {
         right: -14px;
         border-width: 14px 0 14px 14px;
       }
+      
       .ps5-zoom .astro-bubble a {
         font-size: 21px;
       }
+      
       .ps5-zoom .website-by {
         bottom: 14px;
         left: 21px;
         font-size: 21px;
+        background: none;
+        padding: 0;
       }
     }
 
-    /* Ajuste para  PS5 en 720p */
-    @media (max-height: 700px) {
-      .ps5-zoom img { height: 420px; }
+    /* Ajuste para pantallas de PS5 en 720p */
+    @media (max-height: 700px) and (min-width: 800px) {
+      .ps5-zoom .logo { height: 420px; }
       .ps5-zoom .button { padding: 20px 40px; font-size: 26px; }
       .ps5-zoom .astro-bottom { width: 250px; bottom: 0; right: 10px; }
       .ps5-zoom .astro-bubble { bottom: 220px; right: 290px; font-size: 16px; max-width: 300px; }
@@ -206,13 +237,44 @@
       .ps5-zoom .website-by { font-size: 16px; }
       .ps5-zoom .main-content { margin-top: -40px; }
     }
+
+    /* Ajustes para móviles muy pequeños */
+    @media (max-width: 480px) {
+      .astro-bubble {
+        max-width: 170px;
+        font-size: 9px;
+        bottom: 85px;
+        right: 15px;
+        padding: 6px 10px;
+      }
+      .astro-bubble a {
+        font-size: 9px;
+      }
+      .astro-bottom {
+        width: 80px;
+        bottom: 8px;
+        right: 8px;
+      }
+      .website-by {
+        font-size: 9px;
+        bottom: 8px;
+        left: 8px;
+      }
+      .button {
+        padding: 12px 24px;
+        font-size: 16px;
+      }
+      .logo {
+        max-width: 220px;
+      }
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600&display=swap" rel="stylesheet">
 </head>
 <body>
 
   <div class="main-content">
-    <img src="logo-themesps4.png" alt="PS5 SHOP APPKG Logo">
+    <img class="logo" src="logo-themesps4.png" alt="PS5 SHOP APPKG Logo">
     <a class="button" id="enterBtn" href="https://ps5shopappkg.infy.uk/">ENTER NOW</a>
   </div>
 
@@ -228,7 +290,7 @@
   <a class="website-by" href="https://x.com/m0ur0ne" target="_blank">Website by mour0ne</a>
 
   <script>
-    //  .ps5-zoom
+    // Detectar si es PS5 y aplicar la clase .ps5-zoom
     (function() {
       const isPS5 = navigator.userAgent.includes("PlayStation 5");
       if (isPS5) {
