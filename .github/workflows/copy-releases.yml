@@ -26,7 +26,7 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           SOURCE_REPO: "eternumplay/pkstg"
           DEST_REPO: "ps5xploit/ps5shopappkg"
-          ALREADY_COPIED: "PPSA05132 PPSA31246 PPSA01474 PPSA02530 PPSA28101 kenia PPSA21783"
+          ALREADY_COPIED: "PPSA05132 PPSA31246 PPSA01474 PPSA02530 PPSA28101 kenia PPSA21783 PPSA13195"
         run: |
           export GH_TOKEN="$GH_TOKEN"
           gh auth status
