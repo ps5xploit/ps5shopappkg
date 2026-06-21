@@ -25,11 +25,10 @@ jobs:
           SOURCE_REPO: "eternumplay/pkstg"
           DEST_REPO: "ps5xploit/ps5shopappkg"
         run: |
+          echo "🔐 Autenticando..."
           echo "$GH_TOKEN" | gh auth login --with-token
           
           echo "📦 Obteniendo releases de $SOURCE_REPO..."
-          
-          # Obtener la lista de releases
           RELEASES=$(gh release list --repo "$SOURCE_REPO" --limit 100 --json tagName,name,isPrerelease,assets)
           
           echo "📋 Total releases: $(echo "$RELEASES" | jq '. | length')"
@@ -41,7 +40,6 @@ jobs:
             
             echo "📦 Procesando: $RELEASE_NAME ($TAG_NAME)"
             
-            # Verificar si el release ya existe
             if gh release view "$TAG_NAME" --repo "$DEST_REPO" &>/dev/null; then
               echo "  ⏭️  Release $TAG_NAME ya existe. Saltando."
               continue
@@ -54,26 +52,16 @@ jobs:
               gh release create "$TAG_NAME" --title "$RELEASE_NAME" --repo "$DEST_REPO" --notes "Copiado desde $SOURCE_REPO"
             fi
             
-            # Obtener las URLs de los assets
             ASSETS=$(echo "$release" | jq -r '.assets[].browser_download_url')
-            
             for ASSET_URL in $ASSETS; do
               FILENAME=$(basename "$ASSET_URL")
               echo "    📥 Descargando: $FILENAME"
-              
-              # Descargar el asset
               curl -L -o "$FILENAME" "$ASSET_URL"
-              
               echo "    📤 Subiendo: $FILENAME"
-              
-              # Subir usando gh (maneja archivos grandes)
               gh release upload "$TAG_NAME" "$FILENAME" --repo "$DEST_REPO" --clobber
-              
-              # Limpiar para liberar espacio
               rm "$FILENAME"
               echo "    ✅ $FILENAME copiado."
             done
-            
             echo "  ✅ $TAG_NAME copiado correctamente."
           done
           
