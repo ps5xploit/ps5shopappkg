@@ -1,7 +1,13 @@
-name: Copy Releases from Source Repo
+name: Copy Releases from Source Repo (Resume)
 
 on:
   workflow_dispatch:
+    inputs:
+      start_from:
+        description: 'Reanudar DESDE este tag (ej: PPSA20560)'
+        required: true
+        default: 'PPSA20560'
+        type: string
 
 jobs:
   copy-releases:
@@ -12,40 +18,49 @@ jobs:
       - name: Checkout destination repo
         uses: actions/checkout@v4
 
-      - name: Install GitHub CLI (for uploads only)
+      - name: Install GitHub CLI
         run: |
-          echo "📦 Instalando GitHub CLI..."
           curl -L -o gh.tar.gz https://github.com/cli/cli/releases/latest/download/gh_2.95.0_linux_amd64.tar.gz
           tar -xzf gh.tar.gz
           sudo mv gh_*_linux_amd64/bin/gh /usr/local/bin/
           sudo chmod +x /usr/local/bin/gh
           gh --version
 
-      - name: Copy releases using GitHub API
+      - name: Resume copy
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           SOURCE_REPO: "eternumplay/pkstg"
           DEST_REPO: "ps5xploit/ps5shopappkg"
+          START_FROM: ${{ github.event.inputs.start_from }}
         run: |
           export GH_TOKEN="$GH_TOKEN"
           gh auth status
           
-          echo "📦 Obteniendo releases de $SOURCE_REPO usando API..."
-          
-          # Obtener la lista de releases usando la API directamente
+          echo "📦 Obteniendo releases de $SOURCE_REPO..."
           RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" \
             "https://api.github.com/repos/$SOURCE_REPO/releases?per_page=100")
           
-          echo "📋 Total releases: $(echo "$RELEASES" | jq '. | length')"
+          FOUND=false
+          echo "🔄 Reanudando DESDE: $START_FROM"
           
           echo "$RELEASES" | jq -c '.[]' | while read -r release; do
             TAG_NAME=$(echo "$release" | jq -r '.tag_name')
             RELEASE_NAME=$(echo "$release" | jq -r '.name')
             IS_PRERELEASE=$(echo "$release" | jq -r '.prerelease')
             
+            # Saltar juegos hasta encontrar el punto de reanudación
+            if [ "$FOUND" = false ]; then
+              if [ "$TAG_NAME" = "$START_FROM" ]; then
+                FOUND=true
+                echo "📦 Reanudando DESDE: $RELEASE_NAME ($TAG_NAME)"
+              else
+                echo "  ⏭️  Saltando: $TAG_NAME (ya copiado)"
+                continue
+              fi
+            fi
+            
             echo "📦 Procesando: $RELEASE_NAME ($TAG_NAME)"
             
-            # Verificar si el release ya existe en destino
             if gh release view "$TAG_NAME" --repo "$DEST_REPO" &>/dev/null; then
               echo "  ⏭️  Release $TAG_NAME ya existe. Saltando."
               continue
@@ -58,9 +73,7 @@ jobs:
               gh release create "$TAG_NAME" --title "$RELEASE_NAME" --repo "$DEST_REPO" --notes "Copiado desde $SOURCE_REPO"
             fi
             
-            # Obtener las URLs de los assets del release
             ASSETS=$(echo "$release" | jq -r '.assets[].browser_download_url')
-            
             for ASSET_URL in $ASSETS; do
               FILENAME=$(basename "$ASSET_URL")
               echo "    📥 Descargando: $FILENAME"
