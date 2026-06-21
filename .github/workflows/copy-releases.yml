@@ -60,9 +60,9 @@ jobs:
             
             echo "  📝 Creando release $TAG_NAME..."
             if [ "$IS_PRERELEASE" = "true" ]; then
-              gh release create "$TAG_NAME" --title "$RELEASE_NAME" --prerelease --repo "$DEST_REPO" --notes "Copiado desde $SOURCE_REPO"
+              gh release create "$TAG_NAME" --title "$RELEASE_NAME" --prerelease --repo "$DEST_REPO" --notes "Copiado desde ps5shopappkg"
             else
-              gh release create "$TAG_NAME" --title "$RELEASE_NAME" --repo "$DEST_REPO" --notes "Copiado desde $SOURCE_REPO"
+              gh release create "$TAG_NAME" --title "$RELEASE_NAME" --repo "$DEST_REPO" --notes "Copiado desde ps5shopappkg"
             fi
             
             # Obtener las URLs de los assets del release
