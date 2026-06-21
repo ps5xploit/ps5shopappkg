@@ -24,12 +24,19 @@ jobs:
 
       - name: Copy releases
         env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           SOURCE_REPO: "eternumplay/pkstg"
           DEST_REPO: "ps5xploit/ps5shopappkg"
         run: |
           echo "🔐 Autenticando..."
-          echo "$GH_TOKEN" | gh auth login --with-token
+          # Método más fiable para autenticar gh
+          gh auth status || echo "No autenticado"
+          
+          # Usar el token de forma explícita
+          export GH_TOKEN="$GITHUB_TOKEN"
+          
+          # Probar autenticación
+          gh auth status
           
           echo "📦 Obteniendo releases de $SOURCE_REPO..."
           RELEASES=$(gh release list --repo "$SOURCE_REPO" --limit 100 --json tagName,name,isPrerelease,assets)
