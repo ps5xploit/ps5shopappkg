@@ -21,7 +21,7 @@ jobs:
 
       - name: Copy releases from source repo
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           SOURCE_REPO: "eternumplay/pkstg"
         run: |
           echo "🔐 Autenticando con GitHub CLI..."
@@ -30,17 +30,17 @@ jobs:
           echo "📦 Obteniendo releases de $SOURCE_REPO..."
           RELEASES=$(gh release list --repo "$SOURCE_REPO" --limit 100 --json name,id,tagName,isPrerelease,assets)
           
-          echo "📋 Total releases: $(echo "$RELEASES" | jq -r '.[] | .tagName' | wc -l)"
+          echo "📋 Releases encontrados: $(echo "$RELEASES" | jq '.[]' | grep -c '.')"
           
           echo "$RELEASES" | jq -c '.[]' | while read -r release; do
             TAG_NAME=$(echo "$release" | jq -r '.tagName')
             RELEASE_NAME=$(echo "$release" | jq -r '.name')
             IS_PRERELEASE=$(echo "$release" | jq -r '.isPrerelease')
             
-            echo "📦 Procesando release: $RELEASE_NAME ($TAG_NAME)"
+            echo "📦 Procesando: $RELEASE_NAME ($TAG_NAME)"
             
             if gh release view "$TAG_NAME" --repo "${{ github.repository }}" &>/dev/null; then
-              echo "  ⏭️  Release $TAG_NAME ya existe. Saltando."
+              echo "  ⏭️  Ya existe. Saltando."
               continue
             fi
             
@@ -51,15 +51,16 @@ jobs:
               gh release create "$TAG_NAME" --title "$RELEASE_NAME" --repo "${{ github.repository }}" --notes "Copiado desde $SOURCE_REPO"
             fi
             
-            ASSETS=$(echo "$release" | jq -r '.assets[].url')
-            for asset_url in $ASSETS; do
+            echo "$release" | jq -r '.assets[].browser_download_url' | while read -r asset_url; do
               if [ -n "$asset_url" ]; then
-                echo "    📥 Copiando asset: $(basename "$asset_url")"
-                curl -L -H "Authorization: token $GH_TOKEN" -o "$(basename "$asset_url")" "$asset_url"
-                gh release upload "$TAG_NAME" "$(basename "$asset_url")" --repo "${{ github.repository }}" --clobber
-                rm "$(basename "$asset_url")"
+                FILENAME=$(basename "$asset_url")
+                echo "    📥 Descargando: $FILENAME"
+                curl -L -o "$FILENAME" "$asset_url"
+                echo "    📤 Subiendo: $FILENAME"
+                gh release upload "$TAG_NAME" "$FILENAME" --repo "${{ github.repository }}" --clobber
+                rm "$FILENAME"
               fi
             done
-            echo "  ✅ Release $TAG_NAME copiado correctamente."
+            echo "  ✅ $TAG_NAME copiado."
           done
           echo "🎉 ¡Proceso completado!"
