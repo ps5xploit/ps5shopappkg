@@ -1,0 +1,56 @@
+name: Copy Releases from Source Repo
+
+on:
+  workflow_dispatch:
+
+jobs:
+  copy-releases:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout destination repo
+        uses: actions/checkout@v4
+
+      - name: Copy releases from source repo
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_REPO: "eternumplay/pkstg"
+        run: |
+          sudo apt-get update && sudo apt-get install -y gh
+          echo "$GITHUB_TOKEN" | gh auth login --with-token
+          
+          echo "Obteniendo releases de $SOURCE_REPO..."
+          RELEASES=$(gh release list --repo "$SOURCE_REPO" --limit 100 --json name,id,tagName,isPrerelease,assets)
+          
+          echo "$RELEASES" | jq -c '.[]' | while read -r release; do
+            TAG_NAME=$(echo "$release" | jq -r '.tagName')
+            RELEASE_NAME=$(echo "$release" | jq -r '.name')
+            IS_PRERELEASE=$(echo "$release" | jq -r '.isPrerelease')
+            
+            echo "Procesando release: $RELEASE_NAME ($TAG_NAME)"
+            
+            if gh release view "$TAG_NAME" --repo "${{ github.repository }}" &>/dev/null; then
+              echo "  -> Release $TAG_NAME ya existe. Saltando."
+              continue
+            fi
+            
+            echo "  -> Creando release $TAG_NAME..."
+            if [ "$IS_PRERELEASE" = "true" ]; then
+              gh release create "$TAG_NAME" --title "$RELEASE_NAME" --prerelease --repo "${{ github.repository }}" --notes "Copiado desde $SOURCE_REPO"
+            else
+              gh release create "$TAG_NAME" --title "$RELEASE_NAME" --repo "${{ github.repository }}" --notes "Copiado desde $SOURCE_REPO"
+            fi
+            
+            ASSETS=$(echo "$release" | jq -r '.assets[].url')
+            echo "$ASSETS" | while read -r asset_url; do
+              if [ -n "$asset_url" ]; then
+                echo "    -> Copiando asset: $asset_url"
+                curl -L -H "Authorization: token $GITHUB_TOKEN" -O "$asset_url"
+                FILENAME=$(basename "$asset_url")
+                gh release upload "$TAG_NAME" "$FILENAME" --repo "${{ github.repository }}" --clobber
+                rm "$FILENAME"
+              fi
+            done
+            echo "  -> Release $TAG_NAME copiado correctamente."
+          done
