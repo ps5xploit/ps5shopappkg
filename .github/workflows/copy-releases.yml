@@ -12,55 +12,92 @@ jobs:
       - name: Checkout destination repo
         uses: actions/checkout@v4
 
-      - name: Setup GitHub CLI
-        run: |
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          sudo apt-get update
-          sudo apt-get install -y gh
-
-      - name: Copy releases from source repo
+      - name: Copy releases using GitHub API
         env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
           SOURCE_REPO: "eternumplay/pkstg"
+          DEST_REPO: "ps5xploit/ps5shopappkg"
         run: |
-          echo "🔐 Autenticando con GitHub CLI..."
-          echo "$GH_TOKEN" | gh auth login --with-token
-          
           echo "📦 Obteniendo releases de $SOURCE_REPO..."
-          RELEASES=$(gh release list --repo "$SOURCE_REPO" --limit 100 --json name,id,tagName,isPrerelease,assets)
           
-          echo "📋 Releases encontrados: $(echo "$RELEASES" | jq '.[]' | grep -c '.')"
+          # Obtener la lista de releases
+          RELEASES=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/$SOURCE_REPO/releases?per_page=100")
           
-          echo "$RELEASES" | jq -c '.[]' | while read -r release; do
-            TAG_NAME=$(echo "$release" | jq -r '.tagName')
-            RELEASE_NAME=$(echo "$release" | jq -r '.name')
-            IS_PRERELEASE=$(echo "$release" | jq -r '.isPrerelease')
+          # Extraer los tags
+          TAGS=$(echo "$RELEASES" | jq -r '.[].tag_name')
+          
+          echo "📋 Releases encontrados: $(echo "$TAGS" | wc -l)"
+          
+          for TAG in $TAGS; do
+            echo "📦 Procesando: $TAG"
             
-            echo "📦 Procesando: $RELEASE_NAME ($TAG_NAME)"
+            # Verificar si el release ya existe en el destino
+            EXISTE=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/$DEST_REPO/releases/tags/$TAG")
             
-            if gh release view "$TAG_NAME" --repo "${{ github.repository }}" &>/dev/null; then
-              echo "  ⏭️  Ya existe. Saltando."
+            if [ "$EXISTE" = "200" ]; then
+              echo "  ⏭️  Release $TAG ya existe. Saltando."
               continue
             fi
             
-            echo "  📝 Creando release $TAG_NAME..."
+            # Obtener detalles del release
+            RELEASE_DATA=$(echo "$RELEASES" | jq -r ".[] | select(.tag_name == \"$TAG\")")
+            RELEASE_NAME=$(echo "$RELEASE_DATA" | jq -r '.name')
+            IS_PRERELEASE=$(echo "$RELEASE_DATA" | jq -r '.prerelease')
+            BODY=$(echo "$RELEASE_DATA" | jq -r '.body')
+            
+            # Crear el nuevo release
+            echo "  📝 Creando release $TAG..."
+            CREATE_PAYLOAD=$(jq -n \
+              --arg tag "$TAG" \
+              --arg name "$RELEASE_NAME" \
+              --arg body "Copiado desde $SOURCE_REPO" \
+              '{tag_name: $tag, name: $name, body: $body, prerelease: false}')
+            
             if [ "$IS_PRERELEASE" = "true" ]; then
-              gh release create "$TAG_NAME" --title "$RELEASE_NAME" --prerelease --repo "${{ github.repository }}" --notes "Copiado desde $SOURCE_REPO"
-            else
-              gh release create "$TAG_NAME" --title "$RELEASE_NAME" --repo "${{ github.repository }}" --notes "Copiado desde $SOURCE_REPO"
+              CREATE_PAYLOAD=$(echo "$CREATE_PAYLOAD" | jq '.prerelease = true')
             fi
             
-            echo "$release" | jq -r '.assets[].browser_download_url' | while read -r asset_url; do
-              if [ -n "$asset_url" ]; then
-                FILENAME=$(basename "$asset_url")
-                echo "    📥 Descargando: $FILENAME"
-                curl -L -o "$FILENAME" "$asset_url"
-                echo "    📤 Subiendo: $FILENAME"
-                gh release upload "$TAG_NAME" "$FILENAME" --repo "${{ github.repository }}" --clobber
-                rm "$FILENAME"
-              fi
+            CREATE_RESPONSE=$(curl -s -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$CREATE_PAYLOAD" \
+              "https://api.github.com/repos/$DEST_REPO/releases")
+            
+            RELEASE_ID=$(echo "$CREATE_RESPONSE" | jq -r '.id')
+            
+            if [ "$RELEASE_ID" = "null" ] || [ -z "$RELEASE_ID" ]; then
+              echo "  ❌ Error al crear el release: $CREATE_RESPONSE"
+              continue
+            fi
+            
+            # Obtener los assets del release origen
+            ASSETS=$(echo "$RELEASE_DATA" | jq -r '.assets[].browser_download_url')
+            
+            for ASSET_URL in $ASSETS; do
+              FILENAME=$(basename "$ASSET_URL")
+              echo "    📥 Descargando: $FILENAME"
+              
+              # Descargar el asset
+              curl -L -o "$FILENAME" \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                "$ASSET_URL"
+              
+              echo "    📤 Subiendo: $FILENAME"
+              
+              # Subir el asset al release destino
+              curl -X POST \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                -H "Content-Type: $(file -b --mime-type "$FILENAME")" \
+                --data-binary @"$FILENAME" \
+                "https://uploads.github.com/repos/$DEST_REPO/releases/$RELEASE_ID/assets?name=$FILENAME"
+              
+              rm "$FILENAME"
             done
-            echo "  ✅ $TAG_NAME copiado."
+            
+            echo "  ✅ $TAG copiado correctamente."
           done
+          
           echo "🎉 ¡Proceso completado!"
