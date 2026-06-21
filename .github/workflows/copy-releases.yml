@@ -12,44 +12,40 @@ jobs:
       - name: Checkout destination repo
         uses: actions/checkout@v4
 
-      - name: Install GitHub CLI (binary)
+      - name: Install GitHub CLI (for uploads only)
         run: |
-          echo "📦 Instalando GitHub CLI desde binario..."
+          echo "📦 Instalando GitHub CLI..."
           curl -L -o gh.tar.gz https://github.com/cli/cli/releases/latest/download/gh_2.95.0_linux_amd64.tar.gz
           tar -xzf gh.tar.gz
           sudo mv gh_*_linux_amd64/bin/gh /usr/local/bin/
           sudo chmod +x /usr/local/bin/gh
           gh --version
-          echo "✅ GitHub CLI instalado correctamente"
 
-      - name: Copy releases
+      - name: Copy releases using GitHub API
         env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           SOURCE_REPO: "eternumplay/pkstg"
           DEST_REPO: "ps5xploit/ps5shopappkg"
         run: |
-          echo "🔐 Autenticando..."
-          # Método más fiable para autenticar gh
-          gh auth status || echo "No autenticado"
-          
-          # Usar el token de forma explícita
-          export GH_TOKEN="$GITHUB_TOKEN"
-          
-          # Probar autenticación
+          export GH_TOKEN="$GH_TOKEN"
           gh auth status
           
-          echo "📦 Obteniendo releases de $SOURCE_REPO..."
-          RELEASES=$(gh release list --repo "$SOURCE_REPO" --limit 100 --json tagName,name,isPrerelease,assets)
+          echo "📦 Obteniendo releases de $SOURCE_REPO usando API..."
+          
+          # Obtener la lista de releases usando la API directamente
+          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$SOURCE_REPO/releases?per_page=100")
           
           echo "📋 Total releases: $(echo "$RELEASES" | jq '. | length')"
           
           echo "$RELEASES" | jq -c '.[]' | while read -r release; do
-            TAG_NAME=$(echo "$release" | jq -r '.tagName')
+            TAG_NAME=$(echo "$release" | jq -r '.tag_name')
             RELEASE_NAME=$(echo "$release" | jq -r '.name')
-            IS_PRERELEASE=$(echo "$release" | jq -r '.isPrerelease')
+            IS_PRERELEASE=$(echo "$release" | jq -r '.prerelease')
             
             echo "📦 Procesando: $RELEASE_NAME ($TAG_NAME)"
             
+            # Verificar si el release ya existe en destino
             if gh release view "$TAG_NAME" --repo "$DEST_REPO" &>/dev/null; then
               echo "  ⏭️  Release $TAG_NAME ya existe. Saltando."
               continue
@@ -62,7 +58,9 @@ jobs:
               gh release create "$TAG_NAME" --title "$RELEASE_NAME" --repo "$DEST_REPO" --notes "Copiado desde $SOURCE_REPO"
             fi
             
+            # Obtener las URLs de los assets del release
             ASSETS=$(echo "$release" | jq -r '.assets[].browser_download_url')
+            
             for ASSET_URL in $ASSETS; do
               FILENAME=$(basename "$ASSET_URL")
               echo "    📥 Descargando: $FILENAME"
