@@ -1,4 +1,4 @@
-name: Download Specific Games (by Game Name)
+name: Download Specific Games (Exact Names)
 
 on:
   workflow_dispatch:
@@ -26,12 +26,11 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           SOURCE_REPO: "eternumplay/pkstg"
           DEST_REPO: "ps5xploit/ps5shopappkg"
-          GAMES_TO_DOWNLOAD: "Crimson AstroBot Asterix_&_Obelix_Heroes Aeterna_Noctis"
         run: |
           export GH_TOKEN="$GH_TOKEN"
           gh auth status
           
-          echo "📦 Buscando juegos específicos por nombre..."
+          echo "📦 Buscando juegos específicos..."
           
           # Obtener la lista de releases del origen
           RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" \
@@ -43,17 +42,21 @@ jobs:
           
           DEST_TAGS=$(echo "$DEST_RELEASES" | jq -r '.[].tag_name')
           
-          # Procesar cada juego de la lista
-          for GAME in $GAMES_TO_DOWNLOAD; do
-            echo "🔍 Buscando: $GAME"
+          # Lista de juegos a buscar (nombres exactos que ves en la página)
+          # Puedes añadir más separados por espacios
+          GAMES="Crimson Astrobot Asterix_&_Obelix_Heroes Aeterna_Noctis"
+          
+          echo "🔍 Buscando: $GAMES"
+          
+          # Recorrer la lista de juegos
+          for GAME in $GAMES; do
+            echo "🔎 Buscando: $GAME"
             
-            # Buscar el release que CONTENGA el nombre del juego
-            # (escape de caracteres especiales para jq)
-            ESCAPED_GAME=$(echo "$GAME" | sed 's/&/\\&/g')
-            RELEASE=$(echo "$RELEASES" | jq -r ".[] | select(.tag_name | contains(\"$ESCAPED_GAME\"))")
+            # Buscar el release cuyo nombre contenga el texto (insensible a mayúsculas)
+            RELEASE=$(echo "$RELEASES" | jq -r --arg game "$GAME" '.[] | select(.tag_name | ascii_downcase | contains($game | ascii_downcase))')
             
             if [ -z "$RELEASE" ] || [ "$RELEASE" = "null" ]; then
-              echo "  ❌ No se encontró ningún release que contenga: $GAME"
+              echo "  ❌ No se encontró: $GAME"
               continue
             fi
             
