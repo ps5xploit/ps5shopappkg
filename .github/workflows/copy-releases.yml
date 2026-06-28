@@ -1,4 +1,4 @@
-name: Download Specific Games (Exact Names)
+name: Download Specific Games (Full Parts)
 
 on:
   workflow_dispatch:
@@ -9,9 +9,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout destination repo
-        uses: actions/checkout@v4
-
       - name: Install GitHub CLI
         run: |
           echo "📦 Instalando GitHub CLI..."
@@ -21,7 +18,7 @@ jobs:
           sudo chmod +x /usr/local/bin/gh
           gh --version
 
-      - name: Download specific games
+      - name: Download games
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           SOURCE_REPO: "eternumplay/pkstg"
@@ -30,68 +27,48 @@ jobs:
           export GH_TOKEN="$GH_TOKEN"
           gh auth status
           
-          echo "📦 Buscando juegos específicos..."
+          # Lista de juegos a descargar (nombres exactos de los tags)
+          GAMES="Crimson AstroBot Asterix_&_Obelix_Heroes Aeterna_Noctis"
           
-          # Obtener la lista de releases del origen
-          RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" \
-            "https://api.github.com/repos/$SOURCE_REPO/releases?per_page=100")
-          
-          # Obtener la lista de releases ya existentes en destino
-          DEST_RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" \
-            "https://api.github.com/repos/$DEST_REPO/releases?per_page=100")
-          
-          DEST_TAGS=$(echo "$DEST_RELEASES" | jq -r '.[].tag_name')
-          
-          # Lista de juegos a buscar (nombres exactos que ves en la página)
-          # Puedes añadir más separados por espacios
-          GAMES="Crimson Astrobot Asterix_&_Obelix_Heroes Aeterna_Noctis"
-          
-          echo "🔍 Buscando: $GAMES"
-          
-          # Recorrer la lista de juegos
           for GAME in $GAMES; do
-            echo "🔎 Buscando: $GAME"
+            echo "📦 Procesando: $GAME"
             
-            # Buscar el release cuyo nombre contenga el texto (insensible a mayúsculas)
-            RELEASE=$(echo "$RELEASES" | jq -r --arg game "$GAME" '.[] | select(.tag_name | ascii_downcase | contains($game | ascii_downcase))')
+            # Obtener la lista de assets del juego usando la API
+            ASSETS_JSON=$(curl -s -H "Authorization: token $GH_TOKEN" \
+              "https://api.github.com/repos/$SOURCE_REPO/releases/tags/$GAME" | jq '.assets')
             
-            if [ -z "$RELEASE" ] || [ "$RELEASE" = "null" ]; then
-              echo "  ❌ No se encontró: $GAME"
+            # Verificar si se encontraron assets
+            if [ "$ASSETS_JSON" = "null" ] || [ -z "$ASSETS_JSON" ]; then
+              echo "  ❌ No se encontraron assets para: $GAME"
               continue
             fi
             
-            TAG_NAME=$(echo "$RELEASE" | jq -r '.tag_name')
-            RELEASE_NAME=$(echo "$RELEASE" | jq -r '.name')
-            IS_PRERELEASE=$(echo "$RELEASE" | jq -r '.prerelease')
-            
-            echo "📦 Encontrado: $RELEASE_NAME ($TAG_NAME)"
+            # Contar cuántos assets tiene
+            ASSET_COUNT=$(echo "$ASSETS_JSON" | jq 'length')
+            echo "  📋 $ASSET_COUNT archivos encontrados"
             
             # Verificar si el release ya existe en destino
-            if echo "$DEST_TAGS" | grep -q "$TAG_NAME"; then
-              echo "  ⏭️  Release $TAG_NAME ya existe. Saltando."
+            if gh release view "$GAME" --repo "$DEST_REPO" &>/dev/null; then
+              echo "  ⏭️  Release $GAME ya existe. Saltando."
               continue
             fi
             
-            echo "  📝 Creando release $TAG_NAME..."
-            if [ "$IS_PRERELEASE" = "true" ]; then
-              gh release create "$TAG_NAME" --title "$RELEASE_NAME" --prerelease --repo "$DEST_REPO" --notes "Copiado desde ps5shopappkg"
-            else
-              gh release create "$TAG_NAME" --title "$RELEASE_NAME" --repo "$DEST_REPO" --notes "Copiado desde ps5shopappkg"
-            fi
+            # Crear el release en destino
+            echo "  📝 Creando release $GAME..."
+            gh release create "$GAME" --title "$GAME" --repo "$DEST_REPO" --notes "Copiado desde ps5shopappkg" || true
             
-            # Obtener las URLs de los assets del release
-            ASSETS=$(echo "$RELEASE" | jq -r '.assets[].browser_download_url')
-            
-            for ASSET_URL in $ASSETS; do
+            # Descargar y subir cada asset
+            echo "$ASSETS_JSON" | jq -r '.[].browser_download_url' | while read -r ASSET_URL; do
               FILENAME=$(basename "$ASSET_URL")
               echo "    📥 Descargando: $FILENAME"
               curl -L -o "$FILENAME" "$ASSET_URL"
               echo "    📤 Subiendo: $FILENAME"
-              gh release upload "$TAG_NAME" "$FILENAME" --repo "$DEST_REPO" --clobber
+              gh release upload "$GAME" "$FILENAME" --repo "$DEST_REPO" --clobber
               rm "$FILENAME"
               echo "    ✅ $FILENAME copiado."
             done
-            echo "  ✅ $TAG_NAME copiado correctamente."
+            
+            echo "  ✅ $GAME copiado correctamente."
           done
           
           echo "🎉 ¡Proceso completado!"
