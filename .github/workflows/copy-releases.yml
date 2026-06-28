@@ -1,4 +1,4 @@
-name: Copy Missing Releases
+name: Download Specific Games
 
 on:
   workflow_dispatch:
@@ -21,43 +21,45 @@ jobs:
           sudo chmod +x /usr/local/bin/gh
           gh --version
 
-      - name: Copy missing releases
+      - name: Download specific games
         env:
           GH_TOKEN: ${{ secrets.PAT_TOKEN }}
           SOURCE_REPO: "eternumplay/pkstg"
           DEST_REPO: "ps5xploit/ps5shopappkg"
+          GAMES_TO_DOWNLOAD: "PPSA25286 PPSA21564 PPSA16709 PPSA04109"
         run: |
           export GH_TOKEN="$GH_TOKEN"
           gh auth status
           
-          echo "📦 Obteniendo releases de $SOURCE_REPO usando API..."
+          echo "📦 Buscando juegos específicos..."
           
           # Obtener la lista de releases del origen
           RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" \
             "https://api.github.com/repos/$SOURCE_REPO/releases?per_page=100")
           
-          echo "📋 Total releases en origen: $(echo "$RELEASES" | jq '. | length')"
-          
-          # Obtener la lista de releases ya existentes en destino
-          echo "📦 Obteniendo releases ya existentes en $DEST_REPO..."
-          DEST_RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" \
-            "https://api.github.com/repos/$DEST_REPO/releases?per_page=100")
-          
-          DEST_TAGS=$(echo "$DEST_RELEASES" | jq -r '.[].tag_name')
-          echo "📋 Releases ya existentes en destino: $(echo "$DEST_TAGS" | wc -l)"
-          
-          echo "$RELEASES" | jq -c '.[]' | while read -r release; do
-            TAG_NAME=$(echo "$release" | jq -r '.tag_name')
-            RELEASE_NAME=$(echo "$release" | jq -r '.name')
-            IS_PRERELEASE=$(echo "$release" | jq -r '.prerelease')
+          # Procesar cada juego de la lista
+          for GAME in $GAMES_TO_DOWNLOAD; do
+            echo "🔍 Buscando: $GAME"
             
-            # Verificar si el release ya existe en destino
-            if echo "$DEST_TAGS" | grep -q "$TAG_NAME"; then
-              echo "  ⏭️  Saltando: $TAG_NAME (ya existe en destino)"
+            # Buscar el release en la lista
+            RELEASE=$(echo "$RELEASES" | jq -r ".[] | select(.tag_name == \"$GAME\")")
+            
+            if [ -z "$RELEASE" ] || [ "$RELEASE" = "null" ]; then
+              echo "  ❌ No se encontró el release: $GAME"
               continue
             fi
             
+            TAG_NAME=$(echo "$RELEASE" | jq -r '.tag_name')
+            RELEASE_NAME=$(echo "$RELEASE" | jq -r '.name')
+            IS_PRERELEASE=$(echo "$RELEASE" | jq -r '.prerelease')
+            
             echo "📦 Procesando: $RELEASE_NAME ($TAG_NAME)"
+            
+            # Verificar si el release ya existe en destino
+            if gh release view "$TAG_NAME" --repo "$DEST_REPO" &>/dev/null; then
+              echo "  ⏭️  Release $TAG_NAME ya existe. Saltando."
+              continue
+            fi
             
             echo "  📝 Creando release $TAG_NAME..."
             if [ "$IS_PRERELEASE" = "true" ]; then
@@ -67,7 +69,7 @@ jobs:
             fi
             
             # Obtener las URLs de los assets del release
-            ASSETS=$(echo "$release" | jq -r '.assets[].browser_download_url')
+            ASSETS=$(echo "$RELEASE" | jq -r '.assets[].browser_download_url')
             
             for ASSET_URL in $ASSETS; do
               FILENAME=$(basename "$ASSET_URL")
