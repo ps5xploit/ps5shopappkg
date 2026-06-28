@@ -1,4 +1,4 @@
-name: Download Specific Games
+name: Download Specific Games (Flexible)
 
 on:
   workflow_dispatch:
@@ -37,15 +37,21 @@ jobs:
           RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" \
             "https://api.github.com/repos/$SOURCE_REPO/releases?per_page=100")
           
+          # Obtener la lista de releases ya existentes en destino
+          DEST_RELEASES=$(curl -s -H "Authorization: token $GH_TOKEN" \
+            "https://api.github.com/repos/$DEST_REPO/releases?per_page=100")
+          
+          DEST_TAGS=$(echo "$DEST_RELEASES" | jq -r '.[].tag_name')
+          
           # Procesar cada juego de la lista
           for GAME in $GAMES_TO_DOWNLOAD; do
             echo "🔍 Buscando: $GAME"
             
-            # Buscar el release en la lista
-            RELEASE=$(echo "$RELEASES" | jq -r ".[] | select(.tag_name == \"$GAME\")")
+            # Buscar el release que CONTENGA el texto buscado (coincidencia parcial)
+            RELEASE=$(echo "$RELEASES" | jq -r ".[] | select(.tag_name | contains(\"$GAME\"))")
             
             if [ -z "$RELEASE" ] || [ "$RELEASE" = "null" ]; then
-              echo "  ❌ No se encontró el release: $GAME"
+              echo "  ❌ No se encontró ningún release que contenga: $GAME"
               continue
             fi
             
@@ -53,10 +59,10 @@ jobs:
             RELEASE_NAME=$(echo "$RELEASE" | jq -r '.name')
             IS_PRERELEASE=$(echo "$RELEASE" | jq -r '.prerelease')
             
-            echo "📦 Procesando: $RELEASE_NAME ($TAG_NAME)"
+            echo "📦 Encontrado: $RELEASE_NAME ($TAG_NAME)"
             
             # Verificar si el release ya existe en destino
-            if gh release view "$TAG_NAME" --repo "$DEST_REPO" &>/dev/null; then
+            if echo "$DEST_TAGS" | grep -q "$TAG_NAME"; then
               echo "  ⏭️  Release $TAG_NAME ya existe. Saltando."
               continue
             fi
