@@ -1,46 +1,47 @@
-name: Move CUSA images to /images
+name: Move ALL images to /images
 
 on:
-  # Para ejecutarlo manualmente desde la pestaña Actions
-  workflow_dispatch:
-  # Opcional: que se ejecute al hacer push a main
-  # push:
-  #   branches: [ main ]
+  workflow_dispatch:  # Lo ejecutas manualmente desde Actions
 
 jobs:
-  move-images:
+  move-all-images:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Necesario para hacer push
+      contents: write
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Para tener todo el historial y evitar problemas
+          fetch-depth: 0
 
-      - name: Move all CUSA*.jpg files to images/
+      - name: Move ALL image files from root to images/
         run: |
           # Crear la carpeta images si no existe
           mkdir -p images
 
-          # Mover todos los archivos que coincidan con CUSA*.jpg (y .png si los hay)
-          # que estén en la raíz (excluyendo la carpeta images)
-          for file in CUSA*.jpg CUSA*.png; do
-            if [ -f "$file" ]; then
-              mv -v "$file" images/
-            fi
-          done
+          # Buscar TODOS los archivos de imagen en la RAÍZ (sin entrar en subcarpetas)
+          # y moverlos a images/
+          find . -maxdepth 1 -type f \( \
+            -iname "*.jpg" -o \
+            -iname "*.jpeg" -o \
+            -iname "*.png" -o \
+            -iname "*.gif" -o \
+            -iname "*.svg" -o \
+            -iname "*.webp" -o \
+            -iname "*.bmp" -o \
+            -iname "*.ico" \
+          \) -exec mv -v {} images/ \;
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add images/
-          # Si hay cambios, commit y push
+          # Si hay cambios, los subimos
           if git diff --staged --quiet; then
-            echo "No changes to commit"
+            echo "No hay imágenes nuevas para mover."
           else
-            git commit -m "Move CUSA images to /images folder"
+            git commit -m "Mover TODAS las imágenes de la raíz a /images"
             git push
           fi
