@@ -1,10 +1,10 @@
-name: Move ALL images to /images
+name: Cleanup Root Images (Move & Delete Duplicates)
 
 on:
-  workflow_dispatch:  # Lo ejecutas manualmente desde Actions
+  workflow_dispatch:  # Ejecútalo manualmente desde la pestaña Actions
 
 jobs:
-  move-all-images:
+  clean-images:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,13 +15,13 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Move ALL image files from root to images/
+      - name: Move missing images and delete duplicates from root
         run: |
           # Crear la carpeta images si no existe
           mkdir -p images
 
-          # Buscar TODOS los archivos de imagen en la RAÍZ (sin entrar en subcarpetas)
-          # y moverlos a images/
+          echo "🔍 Buscando imágenes en la raíz..."
+          # Busca TODAS las imágenes en la raíz (sin entrar en subcarpetas)
           find . -maxdepth 1 -type f \( \
             -iname "*.jpg" -o \
             -iname "*.jpeg" -o \
@@ -31,17 +31,36 @@ jobs:
             -iname "*.webp" -o \
             -iname "*.bmp" -o \
             -iname "*.ico" \
-          \) -exec mv -v {} images/ \;
+          \) -print0 | while IFS= read -r -d '' file; do
+              # Quitamos el "./" del nombre para obtener solo el nombre del archivo
+              filename=$(basename "$file")
+              target="images/$filename"
 
-      - name: Commit and push changes
+              if [ -f "$target" ]; then
+                  # Si YA existe en images, eliminamos el de la raíz
+                  echo "🗑️  Eliminando duplicado de raíz: $file (ya existe en $target)"
+                  rm -f "$file"
+              else
+                  # Si NO existe en images, lo movemos
+                  echo "📦 Moviendo: $file -> $target"
+                  mv "$file" "$target"
+              fi
+          done
+
+          echo "✅ Limpieza completada."
+
+      - name: Commit and push all changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add images/
-          # Si hay cambios, los subimos
+          
+          # Añade TODOS los cambios: archivos nuevos en images y archivos eliminados de la raíz
+          git add -A
+          
           if git diff --staged --quiet; then
-            echo "No hay imágenes nuevas para mover."
+            echo "✨ No hay cambios que subir. Todo limpio."
           else
-            git commit -m "Mover TODAS las imágenes de la raíz a /images"
+            git commit -m "🧹 Limpieza masiva: mover imágenes a /images y eliminar duplicados de raíz"
             git push
+            echo "🚀 Cambios subidos correctamente."
           fi
