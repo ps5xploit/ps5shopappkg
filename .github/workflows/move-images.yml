@@ -1,0 +1,46 @@
+name: Move CUSA images to /images
+
+on:
+  # Para ejecutarlo manualmente desde la pestaña Actions
+  workflow_dispatch:
+  # Opcional: que se ejecute al hacer push a main
+  # push:
+  #   branches: [ main ]
+
+jobs:
+  move-images:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Necesario para hacer push
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Para tener todo el historial y evitar problemas
+
+      - name: Move all CUSA*.jpg files to images/
+        run: |
+          # Crear la carpeta images si no existe
+          mkdir -p images
+
+          # Mover todos los archivos que coincidan con CUSA*.jpg (y .png si los hay)
+          # que estén en la raíz (excluyendo la carpeta images)
+          for file in CUSA*.jpg CUSA*.png; do
+            if [ -f "$file" ]; then
+              mv -v "$file" images/
+            fi
+          done
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add images/
+          # Si hay cambios, commit y push
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Move CUSA images to /images folder"
+            git push
+          fi
