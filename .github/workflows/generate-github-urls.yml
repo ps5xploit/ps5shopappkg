@@ -60,11 +60,9 @@ jobs:
             game_files="[]"
             
             while IFS= read -r asset_name; do
-              # ========== NUEVO: Construir URL manualmente ==========
-              # Codificar tag y nombre para URL (por si tienen caracteres especiales)
-              encoded_tag=$(echo "$tag" | jq -sRr @uri)
-              encoded_asset=$(echo "$asset_name" | jq -sRr @uri)
-              asset_url="https://github.com/ps5xploit/ps5shopappkg/releases/download/${encoded_tag}/${encoded_asset}"
+              # ========== Construir URL sin codificar ==========
+              # GitHub maneja bien los caracteres especiales en la URL final
+              asset_url="https://github.com/ps5xploit/ps5shopappkg/releases/download/${tag}/${asset_name}"
               
               # Obtener tamaño y número de descargas desde el JSON de assets
               asset_size=$(echo "$assets_json" | jq -r ".[] | select(.name==\"$asset_name\") | .size // 0")
