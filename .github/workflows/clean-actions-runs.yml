@@ -1,36 +1,46 @@
-name: Clean All Actions Runs
+name: Delete ALL Action Runs
 
 on:
-  workflow_dispatch:   # Solo manual
+  workflow_dispatch:  # Lo ejecutas manualmente desde Actions
 
 jobs:
-  clean-runs:
+  delete-runs:
     runs-on: ubuntu-latest
     permissions:
       actions: write   # Necesario para borrar ejecuciones
 
     steps:
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
       - name: Delete all workflow runs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Obtener todas las ejecuciones (pagina hasta que no haya más)
+          echo "🔍 Obteniendo todas las ejecuciones de Actions..."
           page=1
+          total_deleted=0
+
           while true; do
             echo "📄 Obteniendo página $page..."
-            runs=$(gh api repos/${{ github.repository }}/actions/runs?per_page=100&page=$page --jq '.workflow_runs[].id')
             
-            if [ -z "$runs" ]; then
+            # Obtener los IDs de los runs de esta página
+            run_ids=$(gh api repos/${{ github.repository }}/actions/runs?per_page=100&page=$page --jq '.workflow_runs[].id')
+            
+            # Si no hay IDs, salimos del bucle
+            if [ -z "$run_ids" ]; then
               echo "✅ No hay más ejecuciones."
               break
             fi
             
-            for id in $runs; do
-              echo "🗑️  Eliminando run $id..."
-              gh api -X DELETE repos/${{ github.repository }}/actions/runs/$id
+            # Eliminar cada run
+            for id in $run_ids; do
+              echo "  🗑️  Eliminando run $id..."
+              gh api repos/${{ github.repository }}/actions/runs/$id -X DELETE
+              total_deleted=$((total_deleted + 1))
             done
             
             page=$((page + 1))
           done
-          
-          echo "✅ Limpieza completada."
+
+          echo "🎉 Total de ejecuciones eliminadas: $total_deleted"
