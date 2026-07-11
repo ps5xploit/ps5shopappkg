@@ -1,22 +1,20 @@
 name: Delete ALL Action Runs
 
 on:
-  workflow_dispatch:  # Lo ejecutas manualmente desde Actions
+  workflow_dispatch:
 
 jobs:
   delete-runs:
     runs-on: ubuntu-latest
     permissions:
-      actions: write   # Necesario para borrar ejecuciones
+      actions: write
 
     steps:
-      - name: Install jq
-        run: sudo apt-get install -y jq
-
       - name: Delete all workflow runs
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -e
           echo "🔍 Obteniendo todas las ejecuciones de Actions..."
           page=1
           total_deleted=0
@@ -25,10 +23,14 @@ jobs:
             echo "📄 Obteniendo página $page..."
             
             # Obtener los IDs de los runs de esta página
-            run_ids=$(gh api repos/${{ github.repository }}/actions/runs?per_page=100&page=$page --jq '.workflow_runs[].id')
+            response=$(curl -s -H "Authorization: token $GH_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs?per_page=100&page=$page")
             
-            # Si no hay IDs, salimos del bucle
-            if [ -z "$run_ids" ]; then
+            # Extraer IDs con jq (debe estar instalado por defecto)
+            run_ids=$(echo "$response" | jq -r '.workflow_runs[].id')
+            
+            # Si no hay IDs, salimos
+            if [ -z "$run_ids" ] || [ "$run_ids" = "null" ]; then
               echo "✅ No hay más ejecuciones."
               break
             fi
@@ -36,7 +38,8 @@ jobs:
             # Eliminar cada run
             for id in $run_ids; do
               echo "  🗑️  Eliminando run $id..."
-              gh api repos/${{ github.repository }}/actions/runs/$id -X DELETE
+              curl -X DELETE -s -H "Authorization: token $GH_TOKEN" \
+                "https://api.github.com/repos/${{ github.repository }}/actions/runs/$id"
               total_deleted=$((total_deleted + 1))
             done
             
