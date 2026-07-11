@@ -26,90 +26,45 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Obtener todos los releases
-          releases=$(gh release list --limit 1000 --json tagName --jq '.[].tagName')
+          # Obtener todos los releases con sus assets en un solo JSON
+          echo "📡 Obteniendo releases..."
+          gh release list --limit 1000 --json tagName,assets > releases_raw.json
           
-          # Inicializar el JSON
-          echo '{"totalGames": 0, "totalFiles": 0, "failedCount": 0, "failedIds": [], "games": {}, "allFiles": []}' > github_urls.json
-          
-          total_games=0
-          total_files=0
-          failed_ids=()
-          
-          for tag in $releases; do
-            echo "📦 Procesando release: $tag"
-            
-            # Obtener los assets de este release
-            assets_json=$(gh release view "$tag" --json assets --jq '.assets')
-            
-            # Verificar si hay assets
-            if [ "$assets_json" = "[]" ] || [ -z "$assets_json" ]; then
-              echo "  ⚠️  No hay assets en este release. Saltando."
-              failed_ids+=("$tag")
-              continue
-            fi
-            
-            # Extraer nombres de assets
-            assets=$(echo "$assets_json" | jq -r '.[].name')
-            
-            # Contar archivos
-            file_count=$(echo "$assets" | wc -l)
-            total_games=$((total_games + 1))
-            total_files=$((total_files + file_count))
-            
-            game_files="[]"
-            
-            while IFS= read -r asset_name; do
-              # Obtener detalles con manejo de null -> 0
-              asset_url=$(echo "$assets_json" | jq -r ".[] | select(.name==\"$asset_name\") | .browser_download_url // \"\"")
-              asset_size=$(echo "$assets_json" | jq -r ".[] | select(.name==\"$asset_name\") | .size // 0")
-              asset_downloads=$(echo "$assets_json" | jq -r ".[] | select(.name==\"$asset_name\") | .download_count // 0")
-              
-              # Convertir a números (si son null, ya les pusimos 0)
-              # Pero mejor usar jq para construir el objeto directamente
-              file_obj=$(jq -n \
-                --arg gameId "$tag" \
-                --arg fileName "$asset_name" \
-                --arg url "$asset_url" \
-                --arg size "$asset_size" \
-                --arg downloads "$asset_downloads" \
-                '{gameId: $gameId, fileName: $fileName, url: $url, size: ($size | tonumber), downloadCount: ($downloads | tonumber)}')
-              
-              game_files=$(echo "$game_files" | jq --argjson obj "$file_obj" '. += [$obj]')
-              
-              # Añadir a allFiles
-              current_json=$(cat github_urls.json)
-              echo "$current_json" | jq --argjson obj "$file_obj" '.allFiles += [$obj]' > github_urls.json.tmp
-              mv github_urls.json.tmp github_urls.json
-              
-            done <<< "$assets"
-            
-            # Añadir el juego al objeto games
-            current_json=$(cat github_urls.json)
-            echo "$current_json" | jq --arg key "$tag" --argjson files "$game_files" '.games[$key] = $files' > github_urls.json.tmp
-            mv github_urls.json.tmp github_urls.json
-            
-            echo "  ✅ Añadidos $file_count archivos para $tag"
-          done
-          
-          # Actualizar totales y failedIds
-          failed_json=$(printf '%s\n' "${failed_ids[@]}" | jq -R . | jq -s .)
-          current_json=$(cat github_urls.json)
-          echo "$current_json" | jq \
-            --arg totalGames "$total_games" \
-            --arg totalFiles "$total_files" \
-            --argjson failedIds "$failed_json" \
-            '.totalGames = ($totalGames | tonumber) | .totalFiles = ($totalFiles | tonumber) | .failedCount = ($failedIds | length) | .failedIds = $failedIds' > github_urls.json.tmp
-          mv github_urls.json.tmp github_urls.json
+          # Procesar con jq para construir el JSON final
+          jq '
+            {
+              totalGames: length,
+              totalFiles: (map(.assets | length) | add),
+              failedCount: 0,
+              failedIds: [],
+              games: map({
+                key: .tagName,
+                value: (.assets // [] | map({
+                  gameId: .tagName,
+                  fileName: .name,
+                  url: .browser_download_url,
+                  size: (.size // 0 | tonumber),
+                  downloadCount: (.download_count // 0 | tonumber)
+                }))
+              }) | from_entries,
+              allFiles: [.[] | .assets[]? | {
+                gameId: .tagName,
+                fileName: .name,
+                url: .browser_download_url,
+                size: (.size // 0 | tonumber),
+                downloadCount: (.download_count // 0 | tonumber)
+              }]
+            }
+          ' releases_raw.json > github_urls.json
           
           # Añadir fecha al nombre
           date_suffix=$(date +'%Y-%m-%d')
           mv github_urls.json "GITHUB_URLS_${date_suffix}.json"
           
           echo "✅ JSON generado: GITHUB_URLS_${date_suffix}.json"
-          echo "📊 Total juegos: $total_games"
-          echo "📄 Total archivos: $total_files"
-          echo "⚠️  Fallos (sin assets): ${#failed_ids[@]}"
+          
+          # Mostrar estadísticas
+          jq '. | "📊 Total juegos: \(.totalGames), 📄 Total archivos: \(.totalFiles)"' "GITHUB_URLS_${date_suffix}.json"
 
       - name: Upload JSON as artifact
         uses: actions/upload-artifact@v4
