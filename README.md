@@ -2,11 +2,7 @@
 -- https://ps5shopappkg.pages.dev --
 
 
-!! You need etahen /Services / (Direct Package Installer V2) DPI 12800
-
-!! If your firmware does not use etaHEN, send the following payload to download via DPI port 9040.
-
-payload-dpi-9040: https://github.com/ps5xploit/ps5shopappkg/releases/download/ps5shopappkg/ps5shopappkg-dpi.elf
+!! You need etahen /Services / (Direct Package Installer V2) DPI 12800   / max firmware 10.01
 
 
 !! This site redirects to http://ps5shopappkg.infy.uk  / http://ps5shopappkg.ddns.net
