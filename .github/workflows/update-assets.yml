@@ -2,33 +2,37 @@ name: Update Asset URLs
 
 on:
   release:
-    types: [published] # Se ejecuta cuando se publica una nueva release
+    types: [published]   # Se dispara al publicar una release
+  workflow_dispatch:     # 👈 AÑADE ESTO para ejecución manual
 
 jobs:
   update-assets:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get release assets
-        id: get_assets
+      - name: Get release assets and generate JSON
         run: |
-          # Obtener los assets de la release que activó el workflow
           ASSETS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}/assets")
           
-          # Procesar y generar un archivo JSON con las URLs
-          echo "$ASSETS" | jq '.[] | {name: .name, url: .browser_download_url}' > assets.json
+          # Si se ejecuta manualmente, no tenemos github.event.release.id,
+          # así que obtenemos la última release
+          if [ -z "$ASSETS" ] || [ "$ASSETS" = "null" ]; then
+            echo "No release found, fetching latest release..."
+            ASSETS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/releases/latest" | jq '.assets')
+          fi
           
-          # También puedes generar un archivo .js con el formato que necesites
-          echo "const GAMES_URLS = " > games_urls.js
-          echo "$ASSETS" | jq '[.[] | {name: .name, url: .browser_download_url}]' >> games_urls.js
+          echo "$ASSETS" | jq '[.[] | {name: .name, url: .browser_download_url}]' > games.json
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets.json games_urls.js
+          git add games.json
           git commit -m "Update asset URLs" || echo "No changes to commit"
           git push
