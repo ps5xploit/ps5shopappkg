@@ -21,29 +21,39 @@ jobs:
             RELEASE_ID="${{ github.event.release.id }}"
             API_URL="https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets"
           else
-            # Para workflow_dispatch, obtener la última release
             API_URL="https://api.github.com/repos/${{ github.repository }}/releases/latest"
           fi
 
           echo "Fetching assets from: $API_URL"
 
-          # Obtener los datos
+          # Obtener los datos completos
           RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$API_URL")
 
           # Si es la última release, extraer solo el array de assets
           if [ "${{ github.event_name }}" != "release" ]; then
-            RESPONSE=$(echo "$RESPONSE" | jq '.assets')
+            ASSETS=$(echo "$RESPONSE" | jq '.assets')
+          else
+            ASSETS="$RESPONSE"
           fi
 
-          # Verificar que RESPONSE no sea null o vacío
-          if [ -z "$RESPONSE" ] || [ "$RESPONSE" = "null" ]; then
+          # Verificar que ASSETS no sea null o vacío
+          if [ -z "$ASSETS" ] || [ "$ASSETS" = "null" ]; then
             echo "Error: Could not fetch assets."
             exit 1
           fi
 
-          # Generar games.json
-          echo "$RESPONSE" | jq '[.[] | {name: .name, url: .browser_download_url}]' > games.json
-          echo "✅ games.json generated successfully."
+          # Filtrar solo los que terminan en .pkg (case insensitive)
+          # y generar el JSON
+          echo "$ASSETS" | jq '[.[] | select(.name | test("\\.pkg$"; "i")) | {name: .name, url: .browser_download_url}]' > games.json
+
+          # Mostrar cuántos se encontraron
+          COUNT=$(jq '. | length' games.json)
+          echo "✅ games.json generated with $COUNT .pkg assets."
+
+          # Si no hay .pkg, mostrar advertencia
+          if [ "$COUNT" -eq 0 ]; then
+            echo "⚠️ No .pkg assets found in this release."
+          fi
 
       - name: Commit and push changes
         run: |
