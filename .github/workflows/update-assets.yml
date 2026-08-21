@@ -15,44 +15,42 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Get release assets and generate JSON
+        id: get_assets
         run: |
-          # Determinar la URL correcta según el evento
-          if [ "${{ github.event_name }}" = "release" ]; then
-            RELEASE_ID="${{ github.event.release.id }}"
-            API_URL="https://api.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets"
-          else
-            API_URL="https://api.github.com/repos/${{ github.repository }}/releases/latest"
+          # 1. Obtener la URL de la última release (usando el repositorio correcto)
+          REPO="${{ github.repository }}"
+          echo "Repositorio: $REPO"
+          
+          # Si no se especifica, usar ps5xploit/ps5shopappkg (por si acaso)
+          if [ -z "$REPO" ] || [ "$REPO" = "ps5shopappkg/shellshops" ]; then
+            REPO="ps5xploit/ps5shopappkg"
+            echo "⚠️ Repositorio corregido a: $REPO"
           fi
-
-          echo "Fetching assets from: $API_URL"
-
-          # Obtener los datos completos
+          
+          API_URL="https://api.github.com/repos/$REPO/releases/latest"
+          echo "Obteniendo datos de: $API_URL"
+          
+          # 2. Obtener los datos de la release
           RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$API_URL")
-
-          # Si es la última release, extraer solo el array de assets
-          if [ "${{ github.event_name }}" != "release" ]; then
-            ASSETS=$(echo "$RESPONSE" | jq '.assets')
-          else
-            ASSETS="$RESPONSE"
-          fi
-
-          # Verificar que ASSETS no sea null o vacío
-          if [ -z "$ASSETS" ] || [ "$ASSETS" = "null" ]; then
-            echo "Error: Could not fetch assets."
+          
+          # Verificar si la respuesta es válida
+          if echo "$RESPONSE" | jq -e '.message' > /dev/null 2>&1; then
+            echo "❌ Error al obtener la release: $(echo "$RESPONSE" | jq -r '.message')"
             exit 1
           fi
-
-          # Filtrar solo los que terminan en .pkg (case insensitive)
-          # y generar el JSON
-          echo "$ASSETS" | jq '[.[] | select(.name | test("\\.pkg$"; "i")) | {name: .name, url: .browser_download_url}]' > games.json
-
-          # Mostrar cuántos se encontraron
+          
+          # Extraer solo los assets (array)
+          ASSETS=$(echo "$RESPONSE" | jq -c '.assets // []')
+          
+          # 3. Filtrar solo los archivos .pkg y generar games.json
+          echo "$ASSETS" | jq '[.[] | select(.name | endswith(".pkg")) | {name: .name, url: .browser_download_url}]' > games.json
+          
+          # 4. Mostrar cuántos .pkg se encontraron
           COUNT=$(jq '. | length' games.json)
-          echo "✅ games.json generated with $COUNT .pkg assets."
-
-          # Si no hay .pkg, mostrar advertencia
+          echo "✅ Se encontraron $COUNT assets .pkg."
+          
           if [ "$COUNT" -eq 0 ]; then
-            echo "⚠️ No .pkg assets found in this release."
+            echo "⚠️ No se encontraron archivos .pkg en la última release."
           fi
 
       - name: Commit and push changes
