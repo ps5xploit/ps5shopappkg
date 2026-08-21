@@ -14,49 +14,54 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Get release assets and generate JSON
-        id: get_assets
+      - name: Get ALL .pkg assets from ALL releases
         run: |
-          # 1. Obtener la URL de la última release (usando el repositorio correcto)
-          REPO="${{ github.repository }}"
-          echo "Repositorio: $REPO"
+          # Forzar el repositorio correcto
+          REPO="ps5xploit/ps5shopappkg"
+          echo "📦 Repositorio: $REPO"
           
-          # Si no se especifica, usar ps5xploit/ps5shopappkg (por si acaso)
-          if [ -z "$REPO" ] || [ "$REPO" = "ps5shopappkg/shellshops" ]; then
-            REPO="ps5xploit/ps5shopappkg"
-            echo "⚠️ Repositorio corregido a: $REPO"
-          fi
+          PAGE=1
+          ALL_ASSETS="[]"
           
-          API_URL="https://api.github.com/repos/$REPO/releases/latest"
-          echo "Obteniendo datos de: $API_URL"
+          while true; do
+            echo "📄 Obteniendo releases página $PAGE..."
+            RELEASES=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/$REPO/releases?per_page=100&page=$PAGE")
+            
+            # Si no hay más releases, salir
+            COUNT=$(echo "$RELEASES" | jq '. | length')
+            if [ "$COUNT" -eq 0 ]; then
+              echo "✅ No hay más releases."
+              break
+            fi
+            
+            # Extraer assets .pkg de esta página
+            ASSETS=$(echo "$RELEASES" | jq '[.[].assets[] | select(.name | endswith(".pkg"))]')
+            NEW_COUNT=$(echo "$ASSETS" | jq '. | length')
+            echo "   Encontrados $NEW_COUNT assets .pkg en esta página."
+            
+            # Añadir al total
+            ALL_ASSETS=$(echo "$ALL_ASSETS" | jq --argjson new "$ASSETS" '. + $new')
+            PAGE=$((PAGE + 1))
+          done
           
-          # 2. Obtener los datos de la release
-          RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" "$API_URL")
+          # Eliminar duplicados (por si un mismo asset aparece en varias releases)
+          ALL_ASSETS=$(echo "$ALL_ASSETS" | jq 'unique_by(.name)')
           
-          # Verificar si la respuesta es válida
-          if echo "$RESPONSE" | jq -e '.message' > /dev/null 2>&1; then
-            echo "❌ Error al obtener la release: $(echo "$RESPONSE" | jq -r '.message')"
-            exit 1
-          fi
+          # Generar games.json
+          echo "$ALL_ASSETS" | jq '[.[] | {name: .name, url: .browser_download_url}]' > games.json
           
-          # Extraer solo los assets (array)
-          ASSETS=$(echo "$RESPONSE" | jq -c '.assets // []')
+          TOTAL=$(jq '. | length' games.json)
+          echo "✅ TOTAL: $TOTAL archivos .pkg encontrados en todas las releases."
           
-          # 3. Filtrar solo los archivos .pkg y generar games.json
-          echo "$ASSETS" | jq '[.[] | select(.name | endswith(".pkg")) | {name: .name, url: .browser_download_url}]' > games.json
-          
-          # 4. Mostrar cuántos .pkg se encontraron
-          COUNT=$(jq '. | length' games.json)
-          echo "✅ Se encontraron $COUNT assets .pkg."
-          
-          if [ "$COUNT" -eq 0 ]; then
-            echo "⚠️ No se encontraron archivos .pkg en la última release."
-          fi
+          # Mostrar los nombres (para depuración)
+          echo "📋 Lista de archivos encontrados:"
+          jq -r '.[].name' games.json
 
       - name: Commit and push changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add games.json
-          git commit -m "Update asset URLs" || echo "No changes to commit"
+          git commit -m "Update asset URLs from all releases" || echo "No changes to commit"
           git push
