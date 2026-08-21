@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🟡​ 🔹🇸‌🇭‌🇴‌🇵‌ 🇦‌🇵‌🇵‌🇰‌🇬‌ 📦   🟡</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <style>
+
+.top-yellow-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px; 
+  background-color: #ffd700; 
+  z-index: 1001; 
+}
+.construction-tape {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 89px; /* Altura de la banda */
+  background: repeating-linear-gradient(
+    45deg,
+    #ffd700, 
+    #ffd700 20px,
+    #000 20px,
+    #000 40px
+  );
+  z-index: 999; /* Un poco menos que los GIFs (1000) */
+  border-top: 3px solid #000;
+  pointer-events: none; /* Permite hacer clic a través de ella */
+}
+
+
+.construction-gif {
+      position: fixed;          
+     left: 850px;
+    bottom: 85px;
+      width: 300px;    
+      height: auto;    
+      z-index: 1000;   
+    }
+
+.loading-gif-3 {
+   position: fixed;
+ bottom: 50px;
+ left: 950px; 
+  width: 260px;  
+  height: auto;
+  z-index: 1000;
+
+}
+.loading-gif {
+  position: fixed;
+  bottom: 40px;
+  left: 300px;
+  width: 380px;  
+  height: auto;
+  z-index: 1000;
+}
+.loading-gif-2 {
+  position: fixed;
+  bottom: 50px;   
+ left: 890px;    
+  width: 160px;    
+  height: auto;
+  z-index: 1000;
+}
+
+    :root {
+      --bg:#000; --fg:#fff; --muted:#bdbdbd; --accent:#ffd34d; --ink:#111;
+    }
+    html, body {
+      height:100%; margin:0; background:var(--bg); color:var(--fg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Arial, "Noto Sans";
+overflow: hidden;  /* Elimina las barras de desplazamiento */
+    height: 100vh;     /* Fija la altura al 100% del viewport */
+    }
+    .wrap {
+  height: auto;           /* Cambia de min-height: 100% */
+  display: grid;
+  place-items: center;
+  text-align: center;
+  padding: 60px 24px 24px; /* 60px arriba, 24px a los lados, 24px abajo */
+}
+    img.logo {
+      max-width:320px;
+      height:auto;
+      margin-bottom:30px;
+    }
+    #msg {
+      font-size: clamp(22px, 3.6vw, 32px);
+      line-height:1.5;
+    }
+    .sub {
+      margin-top:12px;
+      color:var(--muted);
+      font-size: clamp(15px, 2.2vw, 18px);
+    }
+    .btn {
+      display:inline-flex; align-items:center; gap:10px;
+      margin-top:28px; padding:12px 20px; border-radius:10px;
+      background:var(--accent); color:var(--ink); font-weight:700;
+      text-decoration:none; transition: transform .15s ease, filter .15s ease, box-shadow .15s ease;
+      box-shadow:0 10px 28px rgba(255,211,77,.18);
+    }
+    .btn:hover { transform: translateY(-2px); filter:brightness(1.04); }
+    .btn:active { transform: translateY(0); filter:brightness(.98); }
+    svg { display:inline-block; vertical-align:middle; }
+    .inline-icon { width:1.1em; height:1.1em; }
+    .heart { color:#ff6060; }
+    
+  
+    
+  </style>
+</head>
+<body><div class="top-yellow-bar"></div>
+ <div class="construction-tape"></div>
+  <img src="http://storepkg.com/ps5shopappkg/construccion.gif" alt="Construction" class="construction-gif">
+  <img src="http://storepkg.com/ps5shopappkg/loading-astro.gif" alt="Loading" class="loading-gif">
+<img src="http://storepkg.com/ps5shopappkg/loading-astro2.gif" alt="Loading 2" class="loading-gif-2">
+<img src="http://storepkg.com/ps5shopappkg/loading-astro3.gif" alt="Loading 3" class="loading-gif-3">
+  <main class="wrap">
+    <section>
+      <img src="https://raw.githubusercontent.com/ps5xploit/ps5shopappkg/refs/heads/main/images/logo-themesps4.png" 
+     alt="Logo"
+     style="width:500px; height:auto; display:block; margin:0 auto 30px;" />
+
+      <div id="msg"></div>
+      <div class="sub" id="sub"></div>
+      <a class="btn" id="btn" href="https://ko-fi.com/mouuu" target="_blank" rel="noopener">
+        <!-- taza café en SVG -->
+        <svg class="inline-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 7h12v5a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5V7zm15 1h2a3 3 0 0 1 0 6h-2.2a6.9 6.9 0 0 0 .2-6zM7 4.5C7 3.7 7.6 3 8.5 3S10 3.7 10 4.5 9.4 6 8.5 6 7 5.3 7 4.5zm4 0c0-.8.6-1.5 1.5-1.5S14 3.7 14 4.5 13.4 6 12.5 6 11 5.3 11 4.5z" fill="currentColor"/>
+        </svg>
+        <span id="btnLabel"> Support</span>
+      </a>
+    </section>
+  </main>
+
+  <script>
+    const locales = (navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || "en"]).map(l => l.toLowerCase());
+    const base = (s)=> (s||"en").split("-")[0];
+
+    // RTL si aplica
+    (function setDir(){
+      const rtl = ["ar","fa","he","ur"];
+      if (rtl.includes(base(locales[0]))) document.documentElement.dir = "rtl";
+    })();
+
+    const copy = {
+      title: {
+        es: 'Estamos realizando mejoras,<br>¡volvemos pronto!',
+        en: "We're making improvements,<br>we'll be back soon!",
+        fr: "Nous apportons des améliorations,<br>nous revenons bientôt !",
+        de: "Wir nehmen Verbesserungen vor,<br>wir sind bald zurück!",
+        it: "Stiamo apportando miglioramenti,<br>torniamo presto!",
+        pt: "Estamos a fazer melhorias,<br>voltamos em breve!",
+        ar: "نجري تحسينات،<br>سنعود قريبًا!"
+      },
+      sub: {
+        es: 'Apoya el proyecto <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        en: 'Support the project <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        fr: 'Soutenez le projet <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        de: 'Unterstütze das Projekt <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        it: 'Sostieni il progetto <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        pt: 'Apoie o projeto <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>',
+        ar: 'ادعم المشروع <span class="heart"><svg class="inline-icon" viewBox="0 0 24 24"><path d="M12.1 21s-7.1-4.5-9.4-8.1C1 10.2 2 7 5.2 6.3c1.8-.4 3.3.5 3.9 1.6.6-1.1 2.1-2 3.9-1.6C16.1 7 17 10.2 14.3 12.9 12.1 15.1 12.1 21 12.1 21z" fill="currentColor"/></svg></span>'
+      },
+      btn: {
+        es: "Apoyar",
+        en: "Support",
+        fr: "Soutenir",
+        de: "Unterstützen",
+        it: "Sostieni",
+        pt: "Apoiar",
+        ar: "دعم"
+      }
+    };
+
+    const lang = base(locales[0]);
+    document.getElementById("msg").innerHTML = copy.title[lang] || copy.title.en;
+    document.getElementById("sub").innerHTML = copy.sub[lang] || copy.sub.en;
+    document.getElementById("btnLabel").textContent = copy.btn[lang] || copy.btn.en;
+  </script>
+</body>
+</html>
