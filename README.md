@@ -19,7 +19,9 @@ Grab the **standalone DPIv2 payload** and load it. No etaHEN required.
 
 How to use it:
 1.Start kstuff on your PS5.
+
 2. Send `DPIv2.elf` with your payload injector or payloadmanager
+
 3. Open https://ps5shopappkg.pages.dev in your browser.
 
 ---
