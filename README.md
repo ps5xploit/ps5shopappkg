@@ -18,9 +18,9 @@ Grab the **standalone DPIv2 payload** and load it. No etaHEN required.
 **➡️ Download here:** [DPIv2.elf (latest release)](https://github.com/ps5xploit/ps5shopappkg/releases/latest)
 
 How to use it:
-Start kstuff on your PS5.
-Send DPIv2.elf with your payload injector.
-Open https://ps5shopappkg.pages.dev in your browser.
+1.Start kstuff on your PS5.
+2. Send `DPIv2.elf` with your payload injector or payloadmanager
+3. Open https://ps5shopappkg.pages.dev in your browser.
 
 ---
 
