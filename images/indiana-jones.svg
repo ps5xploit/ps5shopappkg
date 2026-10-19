@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2b1a08"/>
+      <stop offset="60%" stop-color="#4a2c10"/>
+      <stop offset="100%" stop-color="#120b04"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#g)"/>
+  <rect x="26" y="26" width="460" height="460" fill="none" stroke="#b8860b" stroke-width="3"/>
+  <text x="256" y="150" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#e8d9a8" letter-spacing="4">INDIANA</text>
+  <text x="256" y="196" text-anchor="middle" font-family="Georgia, serif" font-size="34" fill="#e8d9a8" letter-spacing="4">JONES</text>
+  <line x1="140" y1="222" x2="372" y2="222" stroke="#b8860b" stroke-width="2"/>
+  <text x="256" y="268" text-anchor="middle" font-family="Arial, sans-serif" font-size="22" fill="#d8c9a0" letter-spacing="2">AND THE</text>
+  <text x="256" y="320" text-anchor="middle" font-family="Georgia, serif" font-size="30" fill="#f0e2b6" letter-spacing="1">GREAT CIRCLE</text>
+  <text x="256" y="430" text-anchor="middle" font-family="Arial, sans-serif" font-size="20" fill="#9c8a63" letter-spacing="6">PLAYSTATION 5</text>
+</svg>
